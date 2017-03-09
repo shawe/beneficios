@@ -1,0 +1,17 @@
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Total neto</th>
+            <th>Total coste</th>
+            <th>Total beneficio</th>
+        </tr>
+    </thead>
+    <tr>
+        <td>{$fsc->show_precio($fsc->total_neto, $fsc->empresa->coddivisa)}</td>
+        <td>{$fsc->show_precio($fsc->total_coste, $fsc->empresa->coddivisa)}</td>
+        <td>{$fsc->show_precio($fsc->total_beneficio, $fsc->empresa->coddivisa)}</td>
+    </tr>
+    <tr>
+        <td colspan="3">{$fsc->test}</td>
+    </tr>
+</table>
