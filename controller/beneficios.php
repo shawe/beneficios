@@ -22,13 +22,13 @@
 
 class beneficios extends fs_controller {
 
-   // Almacena un array de facturas de venta
-   public $facturas;
+   // Almacena un array de documentos de venta
+   public $documentos;
    //Almacena la tabla donde se encuentran los $documentos
    public $table;
-   // Acumula el neto de facturas de venta
+   // Acumula el neto de documentos de venta
    public $total_neto;
-   // Acumula el precio de coste de los articulos que hay del array de facturas de venta
+   // Acumula el precio de coste de los articulos que hay del array de documentos de venta
    public $total_coste;
    // Diferencia entre total_neto y total_coste
    public $total_beneficio;
@@ -53,21 +53,21 @@ class beneficios extends fs_controller {
       $this->share_extension();
 
       $this->test = "";
-      $this->facturas = filter_input(INPUT_POST, 'facs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-      if (!empty($this->facturas)) {
-         $this->table=$this->table($this->facturas);
-         $this->total_neto = $this->totalneto($this->facturas);
-         $this->total_coste = $this->totalcoste($this->facturas);
+      $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+      if (!empty($this->documentos)) {
+         $this->table=$this->table($this->documentos);
+         $this->total_neto = $this->totalneto($this->documentos);
+         $this->total_coste = $this->totalcoste($this->documentos);
          $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
 
 
          
-         $this->test = json_encode($this->facturas);
+         //$this->test = json_encode($this->documentos);
       } else {
          $this->test = "No se han recibido datos";
       }
 
-       echo($this->total_coste);
+       //echo($this->total_coste);
    }
 
    /**
@@ -89,62 +89,56 @@ class beneficios extends fs_controller {
       $fsext->type = 'head';
       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
       $fsext->save();
+
+      $fsext = new fs_extension();
+      $fsext->name = 'beneficios_presupuestos';
+      $fsext->from = __CLASS__;
+      $fsext->to = 'ventas_presupuestos';
+      $fsext->type = 'head';
+      $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+      $fsext->save();
    }
-
-   /**
-    * Devuelve un array que contiene sólo los idfacturas
-    * 
-    * @param array $array_facturas
-    * @return array
-    */
-   /*public function idfacturas($array_facturas) {
-      $ids = array();
-
-      // Buscamos los ids de las facturas recibidas en $array_facturas
-      $sql = "SELECT idfactura FROM facturascli WHERE codigo IN ('" . join("','", $array_facturas) . "')";
-
-      $data = $this->db->select("$sql");
-
-      if ($data) {
-         foreach ($data as $d) {
-            $ids[] = $d['idfactura'];
-         }
-      }
-
-      return $ids;
-   }*/
 
     /**
      * Devuelve la tabla donde están los documentos
      *
-     * @param $array_facturas
+     * @param $array_documentos
      * @return string
      */
-    public function table($array_facturas)
+    public function table($array_documentos)
     {
-        $value=array_shift($array_facturas);
+        $value=array_shift($array_documentos);
         $sql="SELECT idfactura FROM facturascli WHERE codigo='$value'";
         $data=$this->db->select("$sql");
         if($data)
         {
             $data='facturascli';
         }
-        else $data='albaranescli';
+        else
+        {
+            $sql="SELECT idalbaran FROM albaranescli WHERE codigo='$value'";
+            $data=$this->db->select("$sql");
+            if ($data)
+            {
+                $data='albaranescli';
+            }
+            else $data='presupuestoscli';
+        }
 
         return $data;
     }
 
     /**
-    * Devuelve el importe total neto del array de idfacturas recibido
+    * Devuelve el importe total neto del array de documentos recibido
     * 
-    * @param type $array_facturas
+    * @param type $array_documentos
     * @return double
     */
-   public function totalneto($array_facturas) {
+   public function totalneto($array_documentos) {
       $totalneto = 0;
 
-      // Buscamos los netos de las facturas recibidas en $array_facturas
-      $sql = "SELECT neto FROM ".$this->table." WHERE codigo IN ('" . join("','", $array_facturas) . "')";
+      // Buscamos los netos de las facturas recibidas en $array_documentos
+      $sql = "SELECT neto FROM ".$this->table." WHERE codigo IN ('" . join("','", $array_documentos) . "')";
       $data = $this->db->select("$sql");
 
       foreach ($data as $d) {
@@ -155,17 +149,30 @@ class beneficios extends fs_controller {
    }
 
    /**
-    * Devuelve el importe total de coste del array de idfacturas recibido
+    * Devuelve el importe total de coste del array de documentos recibido
     * 
-    * @param type $array_facturas
+    * @param type $array_documentos
     * @return double
     */
-   public function totalcoste($array_facturas) {
+   public function totalcoste($array_documentos) {
       $totalcoste = 0;
-      if($this->table=='facturascli') $doc='factura';
-      else $doc='albaran';
+      /*if($this->table=='facturascli') $doc='factura';
+      else $doc='albaran';*/
 
-      // Buscamos la referencia, preciocoste, cantidad y pvptotal de las facturas recibidas en $array_facturas
+       switch ($this->table)
+       {
+           case 'facturascli':
+               $doc='factura';
+               break;
+           case 'albaranescli':
+               $doc='albaran';
+               break;
+           case 'presupuestoscli':
+               $doc='presupuesto';
+               break;
+       }
+
+     // Buscamos la referencia, preciocoste, cantidad y pvptotal de las facturas recibidas en $array_facturas
 // Alternativa 1
 /*
       $sql = "SELECT articulos.referencia, articulos.preciocoste, lineasfacturascli.cantidad, lineasfacturascli.pvptotal ";
@@ -179,7 +186,7 @@ class beneficios extends fs_controller {
       $sql = "SELECT articulos.referencia, articulos.preciocoste, lineas".$this->table.".cantidad, lineas".$this->table.".pvptotal ";
       $sql .= "FROM articulos, ".$this->table." ";
       $sql .= "LEFT JOIN lineas".$this->table." ON lineas".$this->table.".id".$doc." = ".$this->table.".id".$doc." ";
-      $sql .= "WHERE lineas".$this->table.".referencia = articulos.referencia AND ".$this->table.".codigo IN ('" . join("','", $array_facturas) . "')";
+      $sql .= "WHERE lineas".$this->table.".referencia = articulos.referencia AND ".$this->table.".codigo IN ('" . join("','", $array_documentos) . "')";
 
       
       $data = $this->db->select("$sql");

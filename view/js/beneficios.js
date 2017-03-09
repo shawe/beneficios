@@ -23,9 +23,9 @@ $(document).ready(function () {
     var match = $("table a").not('.cancel_clickable');
 
     // Array con los ids de todas las facturas
-    var facs = [];
+    var docs = [];
     $(match).each(function () {
-        facs.push($(this).text());
+        docs.push($(this).text());
     });
 
     // Añadimos el div donde irá la información
@@ -36,7 +36,7 @@ $(document).ready(function () {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({facs: facs}),
+        data: ({docs: docs}),
         dataType: 'html',
         success: finished
     });
