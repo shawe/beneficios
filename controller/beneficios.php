@@ -62,7 +62,7 @@ class beneficios extends fs_controller {
 
 
          
-         //$this->test = json_encode($this->documentos);
+         $this->test = json_encode($this->documentos);
       } else {
          $this->test = "No se han recibido datos";
       }
@@ -74,29 +74,55 @@ class beneficios extends fs_controller {
     * Extensión para integrarse en otras páginas (heredado de fs_controller)
     */
    private function share_extension() {
-      $fsext = new fs_extension();
-      $fsext->name = 'beneficios_facturas';
-      $fsext->from = __CLASS__;
-      $fsext->to = 'ventas_facturas';
-      $fsext->type = 'head';
-      $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-      $fsext->save();
 
-      $fsext = new fs_extension();
-      $fsext->name = 'beneficios_albaranes';
-      $fsext->from = __CLASS__;
-      $fsext->to = 'ventas_albaranes';
-      $fsext->type = 'head';
-      $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-      $fsext->save();
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_facturas';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_facturas';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
 
-      $fsext = new fs_extension();
-      $fsext->name = 'beneficios_presupuestos';
-      $fsext->from = __CLASS__;
-      $fsext->to = 'ventas_presupuestos';
-      $fsext->type = 'head';
-      $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-      $fsext->save();
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_albaranes';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_albaranes';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_pedidos';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_pedidos';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_presupuestos';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_presupuestos';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_factura';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_factura';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+      /* $fsext = new fs_extension();
+       $fsext->name = 'beneficios_factura2';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_factura';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios_documento.js"></script>';
+       $fsext->save();*/
+
    }
 
     /**
@@ -122,7 +148,17 @@ class beneficios extends fs_controller {
             {
                 $data='albaranescli';
             }
-            else $data='presupuestoscli';
+            else
+            {
+                $sql="SELECT idpedido FROM pedidoscli WHERE codigo='$value'";
+                $data=$this->db->select("$sql");
+                if ($data)
+                {
+                    $data='pedidoscli';
+                }
+                else $data='presupuestoscli';
+            }
+
         }
 
         return $data;
@@ -156,8 +192,6 @@ class beneficios extends fs_controller {
     */
    public function totalcoste($array_documentos) {
       $totalcoste = 0;
-      /*if($this->table=='facturascli') $doc='factura';
-      else $doc='albaran';*/
 
        switch ($this->table)
        {
@@ -167,9 +201,13 @@ class beneficios extends fs_controller {
            case 'albaranescli':
                $doc='albaran';
                break;
+           case 'pedidoscli';
+               $doc='pedido';
+               break;
            case 'presupuestoscli':
                $doc='presupuesto';
                break;
+
        }
 
      // Buscamos la referencia, preciocoste, cantidad y pvptotal de las facturas recibidas en $array_facturas

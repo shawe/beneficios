@@ -17,34 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(document).ready(function () {
+$(document).ready(function(){
 
     // Recogemos los codigos de los documentos en el listado
-    var match = $("table tr.clickableRow a").not('.cancel_clickable');
-
-    //Si no encuentra nada se trata de un documento y tenemos que buscar en otra parte
-    if(match[0]==null)
-    {
-        match = $("ol li.active");
-        //var txt=' <th class="text-right" width="80">Beneficio</th>';
-        //$("th:contains(Dto)").after(txt);
-
-       /* $('.table').find('tr').each(function(){
-            $(this).find('td').eq(4).after('<td>'+raintpl+'</td>');
-        });
-
-        /*$('.table td:nth-of-type(2) ').append("<td class='text-right'>second</td>");
-
-        $('.table tr:nth-of-type(2)').each(function(){
-            $(this).append("<td class='text-right'>second</td>");
-
-        });*/
-    }
+    var match = $("ol li.active");
+    var number=0;
 
     // Array con los codigos de todos los documentos
     var docs = [];
     $(match).each(function () {
         docs.push($(this).text());
+    });
+
+    var txt=' <th class="text-right" width="80">Coste</th>';
+    $("th:contains(Cantidad)").after(txt);
+    // Añadimos el div donde irá la información
+    /*var html = '<div id="beneficios" class="table-responsive"></div>';
+    $(".table-responsive").append(html);*/
+
+    // Consulta AJAX para generar la tabla de beneficios
+    $.ajax({
+        url: 'index.php?page=beneficios_documento',
+        type: "post",
+        data: ({docs: docs}),
+        dataType: 'html',
+        success: finished
     });
 
     // Añadimos el div donde irá la información
@@ -57,11 +54,17 @@ $(document).ready(function () {
         type: "post",
         data: ({docs: docs}),
         dataType: 'html',
-        success: finished
+        success: finished2
     });
 
 });
 
 function finished(result) {
+    $('.table').find('tr').each(function(){
+        $(this).find('td').eq(2).after(result);
+    });
+}
+
+function finished2(result) {
     $('#beneficios').append(result);
 }
