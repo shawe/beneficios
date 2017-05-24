@@ -22,8 +22,12 @@
 
 class beneficios extends fs_controller {
 
-   // Almacena un array de documentos de venta
+   // Almacena un array de documentos/articulos de venta
    public $documentos;
+   //Almacena un array de cantidades de articulos
+   public $cantidades;
+   //Almacena el total neto de nueva_venta
+   public $neto;
    //Almacena la tabla donde se encuentran los $documentos
    public $table;
    // Acumula el neto de documentos de venta
@@ -32,7 +36,10 @@ class beneficios extends fs_controller {
    public $total_coste;
    // Diferencia entre total_neto y total_coste
    public $total_beneficio;
+    // Acumula el precio de coste de los articulos en nueva_venta
+   public $total_coste_art;
    public $test;
+   public $test2;
 
    /**
     * Constructor del controlador (heredado de fs_controller)
@@ -54,18 +61,49 @@ class beneficios extends fs_controller {
 
       $this->test = "";
       $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-      if (!empty($this->documentos)) {
-         $this->table=$this->table($this->documentos);
-         $this->total_neto = $this->totalneto($this->documentos);
-         $this->total_coste = $this->totalcoste($this->documentos);
-         $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
+      $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+      if (!empty($this->cantidades)) {
+          $this->neto=filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
+          $this->total_neto=$this->neto;
+          $this->total_coste=$this->totalcoste($this->documentos, $this->cantidades);
+          $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
 
 
-         
-         $this->test = json_encode($this->documentos);
-      } else {
-         $this->test = "No se han recibido datos";
+
+          //testejar recepció de dades
+          if (!empty($this->documentos)) {
+
+              $this->test = json_encode($this->documentos);
+          } else {
+              $this->test = "No se han recibido datos";
+          }
+
+          if (!empty($this->cantidades)) {
+              $this->test2 = json_encode($this->cantidades);
+          } else {
+              $this->test2 = "No se han recibido cantidades";
+          }
+
+          if (!empty($this->neto)) {
+              $this->test3 = json_encode($this->neto);
+          } else {
+              $this->test3 = "No se ha recibido neto";
+          }
       }
+       else{
+           if (!empty($this->documentos)) {
+               $this->table=$this->table($this->documentos);
+               $this->total_neto = $this->totalneto($this->documentos);
+               $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
+               $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
+
+
+               //testejar recepció de dades
+               $this->test = json_encode($this->documentos);
+           } else {
+               $this->test = "No se han recibido datos";
+           }
+       }
 
        //echo($this->total_coste);
    }
@@ -113,6 +151,22 @@ class beneficios extends fs_controller {
        $fsext->to = 'ventas_factura';
        $fsext->type = 'head';
        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_albaran';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_albaran';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_nventa';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'nueva_venta';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios_nventa.js"></script>';
        $fsext->save();
 
       /* $fsext = new fs_extension();
@@ -190,52 +244,72 @@ class beneficios extends fs_controller {
     * @param type $array_documentos
     * @return double
     */
-   public function totalcoste($array_documentos) {
-      $totalcoste = 0;
+   public function totalcoste($array_documentos, $array_cantidades) {
+       $totalcoste = 0;
 
-       switch ($this->table)
-       {
-           case 'facturascli':
-               $doc='factura';
-               break;
-           case 'albaranescli':
-               $doc='albaran';
-               break;
-           case 'pedidoscli';
-               $doc='pedido';
-               break;
-           case 'presupuestoscli':
-               $doc='presupuesto';
-               break;
+        //si hay información en $array_cantidades estamos en nueva_venta
+       if(!empty($this->cantidades)){
 
+
+           // Buscamos los costes de los articulos recibidos en $array_documentos
+           $sql = "SELECT preciocoste FROM articulos WHERE referencia IN ('" . join("','", $array_documentos) . "')";
+           $data = $this->db->select("$sql");
+
+           $pointer = 0;
+           //por cada articulo calculamos su coste*cantidad incrementando el señalador de $array_cantidades con $pointer
+           foreach ($data as $d) {
+               $totalcoste = $totalcoste + ($d['preciocoste']*$array_cantidades[$pointer]);
+               $pointer++;
+           }
        }
+       //si no hay información en $array_cantidades estamos tratando con documentos guardados y necesitamos saber a qué tabla pertenecen
+       else{
+           switch ($this->table)
+           {
+               case 'facturascli':
+                   $doc='factura';
+                   break;
+               case 'albaranescli':
+                   $doc='albaran';
+                   break;
+               case 'pedidoscli';
+                   $doc='pedido';
+                   break;
+               case 'presupuestoscli':
+                   $doc='presupuesto';
+                   break;
 
-     // Buscamos la referencia, preciocoste, cantidad y pvptotal de las facturas recibidas en $array_facturas
+           }
+
+           // Buscamos la referencia, preciocoste, cantidad y pvptotal de las facturas recibidas en $array_facturas
 // Alternativa 1
-/*
-      $sql = "SELECT articulos.referencia, articulos.preciocoste, lineasfacturascli.cantidad, lineasfacturascli.pvptotal ";
-      $sql .= "FROM articulos ";
-      $sql .= "LEFT JOIN lineasfacturascli ON lineasfacturascli.referencia = articulos.referencia ";
-      $sql .= "LEFT JOIN facturascli ON lineasfacturascli.idfactura = facturascli.idfactura ";
-      $sql .= "WHERE facturascli.codigo IN ('" . join("','", $array_facturas) . "')";
-*/
+           /*
+                 $sql = "SELECT articulos.referencia, articulos.preciocoste, lineasfacturascli.cantidad, lineasfacturascli.pvptotal ";
+                 $sql .= "FROM articulos ";
+                 $sql .= "LEFT JOIN lineasfacturascli ON lineasfacturascli.referencia = articulos.referencia ";
+                 $sql .= "LEFT JOIN facturascli ON lineasfacturascli.idfactura = facturascli.idfactura ";
+                 $sql .= "WHERE facturascli.codigo IN ('" . join("','", $array_facturas) . "')";
+           */
 // Alternativa 2
 
-      $sql = "SELECT articulos.referencia, articulos.preciocoste, lineas".$this->table.".cantidad, lineas".$this->table.".pvptotal ";
-      $sql .= "FROM articulos, ".$this->table." ";
-      $sql .= "LEFT JOIN lineas".$this->table." ON lineas".$this->table.".id".$doc." = ".$this->table.".id".$doc." ";
-      $sql .= "WHERE lineas".$this->table.".referencia = articulos.referencia AND ".$this->table.".codigo IN ('" . join("','", $array_documentos) . "')";
+           $sql = "SELECT articulos.referencia, articulos.preciocoste, lineas".$this->table.".cantidad, lineas".$this->table.".pvptotal ";
+           $sql .= "FROM articulos, ".$this->table." ";
+           $sql .= "LEFT JOIN lineas".$this->table." ON lineas".$this->table.".id".$doc." = ".$this->table.".id".$doc." ";
+           $sql .= "WHERE lineas".$this->table.".referencia = articulos.referencia AND ".$this->table.".codigo IN ('" . join("','", $array_documentos) . "')";
 
-      
-      $data = $this->db->select("$sql");
-      if ($data) {
-         foreach ($data as $d) {
-            $preciocoste = $d["preciocoste"];
-            $cantidad = $d["cantidad"];
-            $costeporcantidad = $preciocoste * $cantidad;
-            $totalcoste = $totalcoste + $costeporcantidad;
-         }
-      }
+
+           $data = $this->db->select("$sql");
+           if ($data) {
+               foreach ($data as $d) {
+                   $preciocoste = $d["preciocoste"];
+                   $cantidad = $d["cantidad"];
+                   $costeporcantidad = $preciocoste * $cantidad;
+                   $totalcoste = $totalcoste + $costeporcantidad;
+               }
+           }
+       }
+
+
 
       return $totalcoste;
    }
@@ -250,5 +324,7 @@ class beneficios extends fs_controller {
    public function beneficio($total_neto, $total_coste) {
       return $total_neto - $total_coste;
    }
+
+
 
 }
