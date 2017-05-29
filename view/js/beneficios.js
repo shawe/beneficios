@@ -26,19 +26,10 @@ $(document).ready(function () {
     if(match[0]==null)
     {
         match = $("ol li.active");
-        //var txt=' <th class="text-right" width="80">Beneficio</th>';
-        //$("th:contains(Dto)").after(txt);
-
-       /* $('.table').find('tr').each(function(){
-            $(this).find('td').eq(4).after('<td>'+raintpl+'</td>');
-        });
-
-        /*$('.table td:nth-of-type(2) ').append("<td class='text-right'>second</td>");
-
-        $('.table tr:nth-of-type(2)').each(function(){
-            $(this).append("<td class='text-right'>second</td>");
-
-        });*/
+        //si sigue sin encontrar nada estamos editando una factura con el plugin editar_faturas
+        if (match[0]==null){
+            match=$('h2 small');
+        }
     }
 
     // Array con los codigos de todos los documentos
@@ -60,7 +51,132 @@ $(document).ready(function () {
         success: finished
     });
 
+
+    //aqui controlamos las mutaciones
+    counter=0;
+    //variable que contiene el donde hay que observar las mutaciones
+    var target = $("#lineas_albaran").get(0);
+
+
+    // crear instancia observere
+    var observer = new MutationObserver(function(mutations) {
+        mutationObserverCallback(mutations);
+    });
+
+
+    // enviar el nodo target y las opciones para observer
+    observer.observe(target, {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+
 });
+
+// mutaciones
+function mutationObserverCallback(mutations) {
+
+    // acciones a realizar por cada mutación
+    var mutationRecord = mutations[0];
+    // acciones a realizar por cada mutación
+    if (mutationRecord.addedNodes[0] !== undefined ){
+
+        //agregar onchange
+        var cantidad = document.getElementById('cantidad_'+counter);
+        cantidad.addEventListener(
+            'change',
+            function() { showMsg(); },
+            true
+        );
+        var pvp = document.getElementById('pvp_'+counter);
+        pvp.addEventListener(
+            'change',
+            function() { showMsg(); },
+            true
+        );
+        var dto = document.getElementById('dto_'+counter);
+        dto.addEventListener(
+            'change',
+            function() { showMsg(); },
+            true
+        );
+        //lanzar el mensaje e incrementar el contador
+        showMsg();
+        counter++;
+    }
+    else if( mutationRecord.removedNodes[0] !== undefined){
+            showMsg();
+        }
+        else{
+            //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
+            var rowCount = $('#lineas_albaran tr').length;
+
+            for (i=0;i<rowCount;i++){
+                var lineacant = document.getElementById('cantidad_'+i);
+                if (lineacant != null) {
+                    lineacant.addEventListener(
+                        'change',
+                        function() { showMsg(); },
+                        true
+                    );
+                    var lineapvp = document.getElementById('pvp_'+i);
+                    lineapvp.addEventListener(
+                        'change',
+                        function() { showMsg(); },
+                        true
+                    );
+                    var lineadto = document.getElementById('dto_'+i);
+                    lineadto.addEventListener(
+                        'change',
+                        function() { showMsg(); },
+                        true
+                    );
+                    counter++;
+                }
+
+            }
+        }
+
+}
+
+//Funcion para mostrar los beneficios
+function showMsg() {
+
+
+    //variable que contiene la refererncia del articulo
+    match = $("div.form-control a");
+    // Array con los codigos de todos los articulos
+    var docs = [];
+    $(match).each(function () {
+        docs.push($(this).text());
+    });
+
+    //variable que contiene el neto
+    var neto=parseFloat($('#aneto').text());
+    //variable que contiene las cantidades del articulo
+    var cantidad = document.querySelectorAll('input[id^="cantidad_"]');
+    //array con todas las cantidades
+    var cantidades=[];
+    for (var index = 0; index < cantidad.length; index++) {
+        cantidades.push(cantidad[index].value);
+    }
+
+    //borrar el div beneficios (si existe)
+    $('#beneficios').remove();
+    // Añadimos el div donde irá la información
+    var html = '<div id="beneficios" class="table-responsive"></div>';
+    $(".table-responsive").append(html);
+
+    // Consulta AJAX para generar la tabla de beneficios
+    $.ajax({
+        url: 'index.php?page=beneficios',
+        type: "post",
+        data: ({docs: docs, cantidades:cantidades, neto:neto}),
+        dataType: 'html',
+        success: finished
+    });
+}
 
 function finished(result) {
     $('#beneficios').append(result);

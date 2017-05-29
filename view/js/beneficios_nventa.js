@@ -3,7 +3,7 @@
  */
 
 $(document).ready(function(){
-
+//alert('nventa!!');
     //variable global que contiene el nº de mutaciones (addednodes)
     counter=0;
     //variable que contiene el donde hay que observar las mutaciones

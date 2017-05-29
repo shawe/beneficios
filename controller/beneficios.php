@@ -70,8 +70,8 @@ class beneficios extends fs_controller {
 
 
 
-          //testejar recepció de dades
-          if (!empty($this->documentos)) {
+          //testear recepción de datos (necesario descomentar test y test2 en beneficios.html)
+          /*if (!empty($this->documentos)) {
 
               $this->test = json_encode($this->documentos);
           } else {
@@ -82,13 +82,7 @@ class beneficios extends fs_controller {
               $this->test2 = json_encode($this->cantidades);
           } else {
               $this->test2 = "No se han recibido cantidades";
-          }
-
-          if (!empty($this->neto)) {
-              $this->test3 = json_encode($this->neto);
-          } else {
-              $this->test3 = "No se ha recibido neto";
-          }
+          }*/
       }
        else{
            if (!empty($this->documentos)) {
@@ -98,14 +92,13 @@ class beneficios extends fs_controller {
                $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
 
 
-               //testejar recepció de dades
-               $this->test = json_encode($this->documentos);
+               //testear recepción de datos (necesario descomentar test en beneficios.html)
+               /*$this->test = json_encode($this->documentos);
            } else {
-               $this->test = "No se han recibido datos";
+               $this->test = "No se han recibido datos";*/
            }
        }
 
-       //echo($this->total_coste);
    }
 
    /**
@@ -162,20 +155,36 @@ class beneficios extends fs_controller {
        $fsext->save();
 
        $fsext = new fs_extension();
-       $fsext->name = 'beneficios_nventa';
+       $fsext->name = 'beneficios_pedido';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_pedido';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_presupuesto';
+       $fsext->from = __CLASS__;
+       $fsext->to = 'ventas_presupuesto';
+       $fsext->type = 'head';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
+
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_nueva_venta';
        $fsext->from = __CLASS__;
        $fsext->to = 'nueva_venta';
        $fsext->type = 'head';
-       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios_nventa.js"></script>';
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
        $fsext->save();
 
-      /* $fsext = new fs_extension();
-       $fsext->name = 'beneficios_factura2';
+       $fsext = new fs_extension();
+       $fsext->name = 'beneficios_editar_factura';
        $fsext->from = __CLASS__;
-       $fsext->to = 'ventas_factura';
+       $fsext->to = 'editar_factura';
        $fsext->type = 'head';
-       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios_documento.js"></script>';
-       $fsext->save();*/
+       $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
+       $fsext->save();
 
    }
 
@@ -252,7 +261,7 @@ class beneficios extends fs_controller {
 
 
            // Buscamos los costes de los articulos recibidos en $array_documentos
-           $sql = "SELECT preciocoste FROM articulos WHERE referencia IN ('" . join("','", $array_documentos) . "')";
+          /* $sql = "SELECT preciocoste FROM articulos WHERE referencia IN ('" . join("','", $array_documentos) . "')";
            $data = $this->db->select("$sql");
 
            $pointer = 0;
@@ -260,7 +269,17 @@ class beneficios extends fs_controller {
            foreach ($data as $d) {
                $totalcoste = $totalcoste + ($d['preciocoste']*$array_cantidades[$pointer]);
                $pointer++;
+           }*/
+           $length = count($array_cantidades);
+           for ($i=0;$i<$length;$i++){
+               $sql = "SELECT preciocoste FROM articulos WHERE referencia='$array_documentos[$i]'";
+               $data = $this->db->select("$sql");
+
+               foreach ($data as $d) {
+                   $totalcoste = $totalcoste + ($d['preciocoste']*$array_cantidades[$i]);
+               }
            }
+
        }
        //si no hay información en $array_cantidades estamos tratando con documentos guardados y necesitamos saber a qué tabla pertenecen
        else{
