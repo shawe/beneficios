@@ -259,17 +259,7 @@ class beneficios extends fs_controller {
         //si hay información en $array_cantidades estamos en nueva_venta
        if(!empty($this->cantidades)){
 
-
            // Buscamos los costes de los articulos recibidos en $array_documentos
-          /* $sql = "SELECT preciocoste FROM articulos WHERE referencia IN ('" . join("','", $array_documentos) . "')";
-           $data = $this->db->select("$sql");
-
-           $pointer = 0;
-           //por cada articulo calculamos su coste*cantidad incrementando el señalador de $array_cantidades con $pointer
-           foreach ($data as $d) {
-               $totalcoste = $totalcoste + ($d['preciocoste']*$array_cantidades[$pointer]);
-               $pointer++;
-           }*/
            $length = count($array_cantidades);
            for ($i=0;$i<$length;$i++){
                $sql = "SELECT preciocoste FROM articulos WHERE referencia='$array_documentos[$i]'";
