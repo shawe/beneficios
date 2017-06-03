@@ -51,31 +51,56 @@ $(document).ready(function () {
         success: finished
     });
 
+    //************************************************************************
 
     //aqui controlamos las mutaciones
     counter=0;
     //variable que contiene el donde hay que observar las mutaciones
     var target = $("#lineas_albaran").get(0);
 
+    if (target!=null){
+        // crear instancia observere
+        var observer = new MutationObserver(function(mutations) {
+            mutation_observer_callback(mutations);
+        });
 
-    // crear instancia observere
-    var observer = new MutationObserver(function(mutations) {
-        mutationObserverCallback(mutations);
+        // enviar el nodo target y las opciones para observer
+        observer.observe(target, {
+            attributes: true,
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
+
+
+
+    //***************************************************************************
+
+    //guardar datos en la bdd cuando pulsamos el botón Guardar
+    $('.btn-primary').click(function() {
+        var bcodigo=match.text();
+        var bneto=parseFloat($('#b_neto').text());
+        var bcoste=parseFloat($('#b_coste').text());
+        var bbeneficio=parseFloat($('#b_beneficio').text());
+        var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
+        //alert("codigo: "+bcodigo+" neto: "+bneto+" coste: "+bcoste+" beneficio: "+bbeneficio);
+        //alert(array_beneficios.join('\n'));
+        $.ajax({
+            url: 'index.php?page=beneficios',
+            type: "post",
+            data: ({array_beneficios: array_beneficios}),
+            dataType: 'html'
+        });
     });
 
-
-    // enviar el nodo target y las opciones para observer
-    observer.observe(target, {
-        attributes: true,
-        childList: true,
-        characterData: true,
-        subtree: true
-    });
 
 });
 
-// mutaciones
-function mutationObserverCallback(mutations) {
+
+
+// función que controla las mutaciones
+function mutation_observer_callback(mutations) {
 
     // acciones a realizar por cada mutación
     var mutationRecord = mutations[0];
@@ -86,27 +111,27 @@ function mutationObserverCallback(mutations) {
         var cantidad = document.getElementById('cantidad_'+counter);
         cantidad.addEventListener(
             'change',
-            function() { showMsg(); },
+            function() { show_msg(); },
             true
         );
         var pvp = document.getElementById('pvp_'+counter);
         pvp.addEventListener(
             'change',
-            function() { showMsg(); },
+            function() { show_msg(); },
             true
         );
         var dto = document.getElementById('dto_'+counter);
         dto.addEventListener(
             'change',
-            function() { showMsg(); },
+            function() { show_msg(); },
             true
         );
         //lanzar el mensaje e incrementar el contador
-        showMsg();
+        show_msg();
         counter++;
     }
     else if( mutationRecord.removedNodes[0] !== undefined){
-            showMsg();
+            show_msg();
         }
         else{
             //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
@@ -117,19 +142,19 @@ function mutationObserverCallback(mutations) {
                 if (lineacant != null) {
                     lineacant.addEventListener(
                         'change',
-                        function() { showMsg(); },
+                        function() { show_msg(); },
                         true
                     );
                     var lineapvp = document.getElementById('pvp_'+i);
                     lineapvp.addEventListener(
                         'change',
-                        function() { showMsg(); },
+                        function() { show_msg(); },
                         true
                     );
                     var lineadto = document.getElementById('dto_'+i);
                     lineadto.addEventListener(
                         'change',
-                        function() { showMsg(); },
+                        function() { show_msg(); },
                         true
                     );
                     counter++;
@@ -140,12 +165,12 @@ function mutationObserverCallback(mutations) {
 
 }
 
-//Funcion para mostrar los beneficios
-function showMsg() {
+//Funcion para enviar los datos de beneficios
+function show_msg() {
 
 
     //variable que contiene la refererncia del articulo
-    match = $("div.form-control a");
+    var match = $("div.form-control a");
     // Array con los codigos de todos los articulos
     var docs = [];
     $(match).each(function () {
@@ -178,6 +203,7 @@ function showMsg() {
     });
 }
 
+//función para insertar el resultado
 function finished(result) {
     $('#beneficios').append(result);
 }

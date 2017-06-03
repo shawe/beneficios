@@ -19,6 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_model('beneficio.php');
+
 
 class beneficios extends fs_controller {
 
@@ -26,6 +28,8 @@ class beneficios extends fs_controller {
    public $documentos;
    //Almacena un array de cantidades de articulos
    public $cantidades;
+   //almacena un array con los datos a guardar
+   public $datos;
    //Almacena el total neto de nueva_venta
    public $neto;
    //Almacena la tabla donde se encuentran los $documentos
@@ -38,6 +42,9 @@ class beneficios extends fs_controller {
    public $total_beneficio;
     // Acumula el precio de coste de los articulos en nueva_venta
    public $total_coste_art;
+    //objeto modelo
+   public $beneficio;
+    // para testear
    public $test;
    public $test2;
 
@@ -62,42 +69,50 @@ class beneficios extends fs_controller {
       $this->test = "";
       $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
       $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-      if (!empty($this->cantidades)) {
-          $this->neto=filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
-          $this->total_neto=$this->neto;
-          $this->total_coste=$this->totalcoste($this->documentos, $this->cantidades);
-          $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
 
-
-
-          //testear recepción de datos (necesario descomentar test y test2 en beneficios.html)
-          /*if (!empty($this->documentos)) {
-
-              $this->test = json_encode($this->documentos);
-          } else {
-              $this->test = "No se han recibido datos";
-          }
-
-          if (!empty($this->cantidades)) {
-              $this->test2 = json_encode($this->cantidades);
-          } else {
-              $this->test2 = "No se han recibido cantidades";
-          }*/
-      }
+        //si guardamos un documento actualizamos o insertamos en la bdd
+       if (isset($_POST['array_beneficios'])){
+           $this->datos=filter_input(INPUT_POST, 'array_beneficios', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+           $this->guardar();
+       }
        else{
-           if (!empty($this->documentos)) {
-               $this->table=$this->table($this->documentos);
-               $this->total_neto = $this->totalneto($this->documentos);
-               $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
-               $this->total_beneficio = $this->beneficio($this->total_neto, $this->total_coste);
+       //si nos pasan cantidades estamos creando o editando un documento
+           if (!empty($this->cantidades)) {
+               $this->neto=filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
+               $this->total_neto=$this->neto;
+               $this->total_coste=$this->totalcoste($this->documentos, $this->cantidades);
+               $this->total_beneficio = $this->calc_beneficio($this->total_neto, $this->total_coste);
 
 
-               //testear recepción de datos (necesario descomentar test en beneficios.html)
-               /*$this->test = json_encode($this->documentos);
-           } else {
-               $this->test = "No se han recibido datos";*/
+               //testear recepción de datos (necesario descomentar test y test2 en beneficios.html)
+               /*if (!empty($this->documentos)) {
+
+                   $this->test = json_encode($this->documentos);
+               } else {
+                   $this->test = "No se han recibido datos";
+               }
+
+               if (!empty($this->cantidades)) {
+                   $this->test2 = json_encode($this->cantidades);
+               } else {
+                   $this->test2 = "No se han recibido cantidades";
+               }*/
+           }
+           else{
+               if (!empty($this->documentos)) {
+                   $this->table=$this->table($this->documentos);
+                   $this->total_neto = $this->totalneto($this->documentos);
+                   $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
+                   $this->total_beneficio = $this->calc_beneficio($this->total_neto, $this->total_coste);
+
+                   //testear recepción de datos (necesario descomentar test en beneficios.html)
+                   /*$this->test = json_encode($this->documentos);
+               } else {
+                   $this->test = "No se han recibido datos";*/
+               }
            }
        }
+
 
    }
 
@@ -330,10 +345,27 @@ class beneficios extends fs_controller {
     * @param double $total_coste
     * @return double
     */
-   public function beneficio($total_neto, $total_coste) {
+   public function calc_beneficio($total_neto, $total_coste) {
       return $total_neto - $total_coste;
    }
 
 
+   public function guardar(){
+       $this->beneficio = new beneficio();
+
+       /*hauria de fer això per seleccionar ultima factura insertada...però com se la sèrie??
+        * if ($this->datos[0]!==null){
+           $this->beneficio->codigo=$this->datos[0];
+       }
+       else{
+           $sql="SELECT.... ";
+           $this->beneficio->codigo=
+       }*/
+       $this->beneficio->codigo=$this->datos[0];
+       $this->beneficio->precioneto=$this->datos[1];
+       $this->beneficio->preciocoste=$this->datos[2];
+       $this->beneficio->total_beneficio=$this->datos[3];
+       $this->beneficio->save();
+   }
 
 }

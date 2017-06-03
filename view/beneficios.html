@@ -1,4 +1,4 @@
-<table class="table table-hover">
+<table class="table table-hover" style="margin-left: 2%">
     <thead>
         <tr style="color:#3C8DBC">
             <th>Total neto</th>
@@ -7,14 +7,14 @@
         </tr>
     </thead>
     <tr>
-        <td>{$fsc->show_precio($fsc->total_neto, $fsc->empresa->coddivisa)}</td>
-        <td>{$fsc->show_precio($fsc->total_coste, $fsc->empresa->coddivisa)}</td>
-        <td>{$fsc->show_precio($fsc->total_beneficio, $fsc->empresa->coddivisa)}</td>
+        <td id="b_neto">{$fsc->show_precio($fsc->total_neto, $fsc->empresa->coddivisa)}</td>
+        <td id="b_coste">{$fsc->show_precio($fsc->total_coste, $fsc->empresa->coddivisa)}</td>
+        <td id="b_beneficio">{$fsc->show_precio($fsc->total_beneficio, $fsc->empresa->coddivisa)}</td>
     </tr>
-    <!--<tr>
+    <tr>
        <td colspan="3">{$fsc->test}</td>
        <td colspan="3">{$fsc->test2}</td>
-   </tr>-->
+   </tr>
 </table>
 <div class="alert">
    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
