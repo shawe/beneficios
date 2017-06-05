@@ -59,7 +59,7 @@ $(document).ready(function () {
     var target = $("#lineas_albaran").get(0);
 
     if (target!=null){
-        // crear instancia observere
+        // crear instancia observer
         var observer = new MutationObserver(function(mutations) {
             mutation_observer_callback(mutations);
         });
