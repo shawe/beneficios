@@ -77,6 +77,27 @@ class beneficio extends fs_model
     }
 
 
+    public function lastcod($tablax){
+        sleep(1);
+
+        if ($tablax=='albaran'){
+            $tabla=$tablax.'escli';
+        }
+        else{
+            $tabla=$tablax.'scli';
+        }
+
+        $lastcodigo="";
+        $sql="SELECT codigo, id".$tablax." FROM ".$tabla." ORDER BY id".$tablax." DESC LIMIT 1 ;";
+        $data = $this->db->select($sql);
+        if ($data) {
+            foreach ($data as $d) {
+                $lastcodigo = $d["codigo"];
+            }
+        }
+        return $lastcodigo;
+    }
+
     /*public function all()
     {
         $lista=array();

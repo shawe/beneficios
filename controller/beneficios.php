@@ -70,6 +70,13 @@ class beneficios extends fs_controller {
       $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
       $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
+      //si eliminamos un documento eliminamos en la bdd
+       if (isset($_POST['ecodigo'])){
+           $this->codigo=filter_input(INPUT_POST, 'ecodigo', FILTER_DEFAULT);
+           $this->beneficio = new beneficio();
+           $this->beneficio->delete();
+       }
+
         //si guardamos un documento actualizamos o insertamos en la bdd
        if (isset($_POST['array_beneficios'])){
            $this->datos=filter_input(INPUT_POST, 'array_beneficios', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -353,19 +360,30 @@ class beneficios extends fs_controller {
    public function guardar(){
        $this->beneficio = new beneficio();
 
-       /*hauria de fer això per seleccionar ultima factura insertada...però com se la sèrie??
-        * if ($this->datos[0]!==null){
-           $this->beneficio->codigo=$this->datos[0];
+       $code=$this->datos[0];
+       //si tenemos parte de la tabla en vez del código procesamos
+       switch ($code) {
+           case 'presupuesto':
+                $this->beneficio->codigo=$this->beneficio->lastcod('presupuesto');
+                break;
+           case 'pedido':
+               $this->beneficio->codigo=$this->beneficio->lastcod('pedido');
+                break;
+           case 'albaran':
+               $this->beneficio->codigo=$this->beneficio->lastcod('albaran');
+                break;
+           case 'factura':
+               $this->beneficio->codigo=$this->beneficio->lastcod('factura');
+                break;
+           default:
+               $this->beneficio->codigo=$code;
        }
-       else{
-           $sql="SELECT.... ";
-           $this->beneficio->codigo=
-       }*/
-       $this->beneficio->codigo=$this->datos[0];
+
        $this->beneficio->precioneto=$this->datos[1];
        $this->beneficio->preciocoste=$this->datos[2];
        $this->beneficio->total_beneficio=$this->datos[3];
        $this->beneficio->save();
    }
+
 
 }

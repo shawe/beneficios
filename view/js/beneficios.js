@@ -77,23 +77,59 @@ $(document).ready(function () {
 
     //***************************************************************************
 
-    //guardar datos en la bdd cuando pulsamos el botón Guardar
+    //guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
     $('.btn-primary').click(function() {
+
         var bcodigo=match.text();
-        var bneto=parseFloat($('#b_neto').text());
-        var bcoste=parseFloat($('#b_coste').text());
-        var bbeneficio=parseFloat($('#b_beneficio').text());
-        var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
-        //alert("codigo: "+bcodigo+" neto: "+bneto+" coste: "+bcoste+" beneficio: "+bbeneficio);
-        //alert(array_beneficios.join('\n'));
-        $.ajax({
-            url: 'index.php?page=beneficios',
-            type: "post",
-            data: ({array_beneficios: array_beneficios}),
-            dataType: 'html'
-        });
+
+        if(bcodigo!=''){
+            var bneto=parseFloat($('#b_neto').text());
+            var bcoste=parseFloat($('#b_coste').text());
+            var bbeneficio=parseFloat($('#b_beneficio').text());
+            var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
+            $.ajax({
+                url: 'index.php?page=beneficios',
+                type: "post",
+                data: ({array_beneficios: array_beneficios}),
+                dataType: 'html'
+            });
+        }
     });
 
+
+     //guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
+    $('.btn-group .btn-sm').click(function() {
+
+        var bcodigo=$('input[name="tipo"]:checked').val();
+
+        if(bcodigo!=''){
+            var bneto=parseFloat($('#b_neto').text());
+            var bcoste=parseFloat($('#b_coste').text());
+            var bbeneficio=parseFloat($('#b_beneficio').text());
+            var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
+            $.ajax({
+                url: 'index.php?page=beneficios',
+                type: "post",
+                data: ({array_beneficios: array_beneficios}),
+                dataType: 'html'
+            });
+        }
+    });
+
+
+    //eliminar datos cuando se elimina un documento
+    $('#b_eliminar').click(function() {
+
+        var bcodigo=match.text();
+        if(bcodigo!=''){
+            $.ajax({
+                url: 'index.php?page=beneficios',
+                type: "post",
+                data: ({ecodigo: bcodigo}),
+                dataType: 'html'
+            });
+        }
+    });
 
 });
 
