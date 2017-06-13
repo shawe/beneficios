@@ -71,9 +71,9 @@ class beneficios extends fs_controller {
       $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
       //si eliminamos un documento eliminamos en la bdd
-       if (isset($_POST['ecodigo'])){
-           $this->codigo=filter_input(INPUT_POST, 'ecodigo', FILTER_DEFAULT);
+       if (isset($_POST['bcodigo'])){
            $this->beneficio = new beneficio();
+           $this->beneficio->codigo=filter_input(INPUT_POST, 'bcodigo', FILTER_DEFAULT);
            $this->beneficio->delete();
        }
 

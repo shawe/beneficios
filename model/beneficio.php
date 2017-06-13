@@ -76,7 +76,7 @@ class beneficio extends fs_model
         return $this->db->exec('DELETE FROM beneficios WHERE codigo = '.$this->var2str($this->codigo).';');
     }
 
-
+    //recoge el ultimo codigo insertado en la tabla especificada (retrasamos un segundo para darle tiempo al insert)
     public function lastcod($tablax){
         sleep(1);
 

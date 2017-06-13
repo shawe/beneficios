@@ -19,8 +19,14 @@
 
 $(document).ready(function () {
 
+
     // Recogemos los codigos de los documentos en el listado
     var match = $("table tr.clickableRow a").not('.cancel_clickable');
+
+    //Si hay versiones de presupuesto solo recogemos el que hemos abierto
+    if ($("#modal_versionesp").length==1){
+        match=$("ol li.active");
+    }
 
     //Si no encuentra nada se trata de un documento y tenemos que buscar en otra parte
     if(match[0]==null)
@@ -53,9 +59,9 @@ $(document).ready(function () {
 
     //************************************************************************
 
-    //aqui controlamos las mutaciones
+    //Controlamos las mutaciones
     counter=0;
-    //variable que contiene el donde hay que observar las mutaciones
+    //Donde hay que observar las mutaciones
     var target = $("#lineas_albaran").get(0);
 
     if (target!=null){
@@ -77,7 +83,7 @@ $(document).ready(function () {
 
     //***************************************************************************
 
-    //guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
+    //Guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
     $('.btn-primary').click(function() {
 
         var bcodigo=match.text();
@@ -97,8 +103,8 @@ $(document).ready(function () {
     });
 
 
-     //guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
-    $('.btn-group .btn-sm').click(function() {
+     //Guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
+    $('.b_guardarn .btn-sm').click(function() {
 
         var bcodigo=$('input[name="tipo"]:checked').val();
 
@@ -117,15 +123,15 @@ $(document).ready(function () {
     });
 
 
-    //eliminar datos cuando se elimina un documento
-    $('#b_eliminar').click(function() {
-
+    //Eliminar datos cuando se elimina un documento
+    $('.modal-footer .btn-danger').click(function() {
         var bcodigo=match.text();
+       // alert(bcodigo);
         if(bcodigo!=''){
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({ecodigo: bcodigo}),
+                data: ({bcodigo: bcodigo}),
                 dataType: 'html'
             });
         }
@@ -135,7 +141,7 @@ $(document).ready(function () {
 
 
 
-// función que controla las mutaciones
+// Función que controla las mutaciones
 function mutation_observer_callback(mutations) {
 
     // acciones a realizar por cada mutación
