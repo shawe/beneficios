@@ -3,11 +3,13 @@
 class beneficio extends fs_model
 {
 
-    /// clave primaria. varchar(20)
+    /// clave primaria. varchar(20). código del documento
     public $codigo;
-
+    //double.total neto del documento
     public $precioneto;
+    //double. total coste del documento
     public $preciocoste;
+    //double. total beneficio del documento
     public $total_beneficio;
 
     public function __construct($d=FALSE)
@@ -98,7 +100,67 @@ class beneficio extends fs_model
         return $lastcodigo;
     }
 
-    /*public function all()
+    //recoge todos los codigos pasados en el array existentes en la bdd beneficios
+   /* public function getcodigo($array_documentos){
+        $lista=array();
+        $sql = "SELECT codigo FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $lista[]=new beneficio($d);
+            }
+        }
+        return $lista;
+    }
+
+    //recoge todos los netos de los códigos pasados en el array
+    public function getneto($array_documentos){
+        $resultado=0;
+        $sql = "SELECT precioneto FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $resultado=$resultado+$d;
+            }
+        }
+        return $resultado;
+    }
+
+    //recoge todos los costes de los códigos pasados en el array
+    public function getcoste($array_documentos){
+        $resultado=0;
+        $sql = "SELECT preciocoste FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $resultado=$resultado+$d;
+            }
+        }
+        return $resultado;
+    }
+
+    //recoge todos los beneficios de los códigos pasados en el array
+    public function getbeneficio($array_documentos){
+        $resultado=0;
+        $sql = "SELECT beneficio FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $resultado=$resultado+$d;
+            }
+        }
+        return $resultado;
+    }
+
+    public function all()
     {
         $lista=array();
 
@@ -112,4 +174,6 @@ class beneficio extends fs_model
 
         return $lista;
     }*/
+
+
 }

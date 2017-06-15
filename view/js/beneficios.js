@@ -58,7 +58,6 @@ $(document).ready(function () {
     });
 
     //************************************************************************
-
     //Controlamos las mutaciones
     counter=0;
     //Donde hay que observar las mutaciones
@@ -148,7 +147,6 @@ function mutation_observer_callback(mutations) {
     var mutationRecord = mutations[0];
     // acciones a realizar por cada mutación
     if (mutationRecord.addedNodes[0] !== undefined ){
-
         //agregar onchange
         var cantidad = document.getElementById('cantidad_'+counter);
         cantidad.addEventListener(
@@ -210,7 +208,6 @@ function mutation_observer_callback(mutations) {
 //Funcion para enviar los datos de beneficios
 function show_msg() {
 
-
     //variable que contiene la refererncia del articulo
     var match = $("div.form-control a");
     // Array con los codigos de todos los articulos
@@ -231,6 +228,7 @@ function show_msg() {
 
     //borrar el div beneficios (si existe)
     $('#beneficios').remove();
+
     // Añadimos el div donde irá la información
     var html = '<div id="beneficios" class="table-responsive"></div>';
     $(".table-responsive").append(html);
@@ -247,6 +245,12 @@ function show_msg() {
 
 //función para insertar el resultado
 function finished(result) {
-    $('#beneficios').append(result);
+    var div=$('#beneficios');
+    //controlamos que no exista ya información para evitar duplicidades
+    if( div.is(':empty') ) {
+        //insertamos el resultado
+        div.append(result);
+    }
+
 }
 

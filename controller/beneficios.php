@@ -3,7 +3,7 @@
 /*
  * This file is part of FacturaScripts
  * Copyright (C) 2017  Albert Dilme  
- * Copyright (C) 2017  Francesc Pineda Segarra  shawe.ewahs@gmail.com
+ * Copyright (C) 2017  Francesc Pineda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,9 +26,11 @@ class beneficios extends fs_controller {
 
    // Almacena un array de documentos/articulos de venta
    public $documentos;
+   //Almacena un array de documentos existentes en la bdd
+   public $documentos_bdd;
    //Almacena un array de cantidades de articulos
    public $cantidades;
-   //almacena un array con los datos a guardar
+   //Almacena un array con los datos a guardar
    public $datos;
    //Almacena el total neto de nueva_venta
    public $neto;
@@ -40,9 +42,9 @@ class beneficios extends fs_controller {
    public $total_coste;
    // Diferencia entre total_neto y total_coste
    public $total_beneficio;
-    // Acumula el precio de coste de los articulos en nueva_venta
+   // Acumula el precio de coste de los articulos en nueva_venta
    public $total_coste_art;
-    //objeto modelo
+   //Objeto modelo
    public $beneficio;
     // para testear
    public $test;
@@ -107,15 +109,41 @@ class beneficios extends fs_controller {
            }
            else{
                if (!empty($this->documentos)) {
+                   $totalneto_bdd=0;
+                   $totalcoste_bdd=0;
+                   $totalbeneficio_bdd=0;
+
+                   //comprovar códigos existentes en la bdd
+                   $this->documentos_bdd=$this->collect($this->documentos);
+                   //recogemos los datos de la bdd y sumamos
+                   foreach ($this->documentos_bdd as $d){
+                       $totalneto_bdd = $totalneto_bdd + $d['precioneto'];
+                       $totalcoste_bdd = $totalcoste_bdd+$d['preciocoste'];
+                       $totalbeneficio_bdd = $totalbeneficio_bdd+$d['beneficio'];
+                       //quitamos del array los códigos que ya están en la bdd beneficios
+                       if (($key = array_search($d['codigo'], $this->documentos)) !== false) {
+                           unset($this->documentos[$key]);
+                       }
+                   }
+
+                   //calculamos valores que no están en la bdd sobre el precio de coste actual del artículo
                    $this->table=$this->table($this->documentos);
                    $this->total_neto = $this->totalneto($this->documentos);
                    $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
                    $this->total_beneficio = $this->calc_beneficio($this->total_neto, $this->total_coste);
+                   //sumamos los valores que están en la bdd y los que no están
+                   $this->total_neto=$this->total_neto+$totalneto_bdd;
+                   $this->total_coste=$this->total_coste+$totalcoste_bdd;
+                   $this->total_beneficio=$this->total_beneficio+$totalbeneficio_bdd;
+
 
                    //testear recepción de datos (necesario descomentar test en beneficios.html)
-                   /*$this->test = json_encode($this->documentos);
-               } else {
-                   $this->test = "No se han recibido datos";*/
+                   /*if (!empty($this->documentos_bdd)) {
+                       $this->test = json_encode($this->documentos_bdd);
+                   }
+                   else {
+                       $this->test = "No se han recibido datos";
+                   }*/
                }
            }
        }
@@ -356,7 +384,7 @@ class beneficios extends fs_controller {
       return $total_neto - $total_coste;
    }
 
-
+   //Almacena beneficios en la bdd
    public function guardar(){
        $this->beneficio = new beneficio();
 
@@ -385,5 +413,21 @@ class beneficios extends fs_controller {
        $this->beneficio->save();
    }
 
+    //Recoge los datos de los documentos solicitados existentes en la bdd beneficios
+    public function collect($array_documentos){
+
+        $lista=array();
+        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $lista[]=$d;
+            }
+        }
+
+        return $lista;
+    }
 
 }
