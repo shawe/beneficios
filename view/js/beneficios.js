@@ -88,9 +88,9 @@ $(document).ready(function () {
         var bcodigo=match.text();
 
         if(bcodigo!=''){
-            var bneto=parseFloat($('#b_neto').text());
-            var bcoste=parseFloat($('#b_coste').text());
-            var bbeneficio=parseFloat($('#b_beneficio').text());
+            var bneto=parseFloat($('#b_neto').text().replace(',', '.'));
+            var bcoste=parseFloat($('#b_coste').text().replace(',', '.'));
+            var bbeneficio=parseFloat($('#b_beneficio').text().replace(',', '.'));
             var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
             $.ajax({
                 url: 'index.php?page=beneficios',
@@ -108,9 +108,9 @@ $(document).ready(function () {
         var bcodigo=$('input[name="tipo"]:checked').val();
 
         if(bcodigo!=''){
-            var bneto=parseFloat($('#b_neto').text());
-            var bcoste=parseFloat($('#b_coste').text());
-            var bbeneficio=parseFloat($('#b_beneficio').text());
+            var bneto=parseFloat($('#b_neto').text().replace(',', '.'));
+            var bcoste=parseFloat($('#b_coste').text().replace(',', '.'));
+            var bbeneficio=parseFloat($('#b_beneficio').text().replace(',', '.'));
             var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
             $.ajax({
                 url: 'index.php?page=beneficios',
