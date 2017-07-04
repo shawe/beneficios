@@ -103,7 +103,7 @@ $(document).ready(function () {
 
 
      //Guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
-    $('.b_guardarn .btn-sm').click(function() {
+    $('#btn_guardar1, #btn_guardar2').click(function() {
 
         var bcodigo=$('input[name="tipo"]:checked').val();
 
