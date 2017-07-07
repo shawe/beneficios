@@ -21,7 +21,7 @@ $(document).ready(function () {
 
 
     // Recogemos los codigos de los documentos en el listado
-    var match = $("table tr.clickableRow a").not('.cancel_clickable');
+    var match = $("table tr.clickableRow.success a").not('.cancel_clickable');
 
     //Si hay versiones de presupuesto solo recogemos el que hemos abierto
     if ($("#modal_versionesp").length==1){
