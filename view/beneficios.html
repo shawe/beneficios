@@ -1,10 +1,10 @@
 <table class="table table-hover" style="margin-left: 2%">
     <thead>
-        <tr style="color:#3C8DBC">
-            <th>Total neto</th>
-            <th>Total coste</th>
-            <th>Total beneficio</th>
-        </tr>
+    <tr style="color:#3C8DBC">
+        <th>Total neto</th>
+        <th>Total coste</th>
+        <th>Total beneficio</th>
+    </tr>
     </thead>
     <tr>
         <td id="b_neto">{$fsc->show_precio($fsc->total_neto, $fsc->empresa->coddivisa)}</td>
@@ -12,14 +12,14 @@
         <td id="b_beneficio">{$fsc->show_precio($fsc->total_beneficio, $fsc->empresa->coddivisa)}</td>
     </tr>
     <tr>
-       <td colspan="3">{$fsc->test}</td>
-       <td colspan="3">{$fsc->test2}</td>
-   </tr>
+        <td colspan="3">{$fsc->test}</td>
+        <td colspan="3">{$fsc->test2}</td>
+    </tr>
 </table>
 <div class="alert">
-   <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-   Para realizar un cálculo real de los beneficios, es necesario tener precio de coste asignado a los artículos!
-   <br/>
-   <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-   Los beneficios visibles en los listados solo tienen en cuenta los documentos mostrados en pantalla.
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    Para realizar un cálculo real de los beneficios, es necesario tener precio de coste asignado a los artículos!
+    <br/>
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    Los beneficios visibles en los listados solo tienen en cuenta los documentos mostrados en pantalla.
 </div>

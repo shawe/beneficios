@@ -18,23 +18,20 @@
  */
 
 $(document).ready(function () {
-
-
     // Recogemos los codigos de los documentos en el listado
     var match = $("table tr.clickableRow.success a").not('.cancel_clickable');
 
     //Si hay versiones de presupuesto solo recogemos el que hemos abierto
-    if ($("#modal_versionesp").length==1){
-        match=$("ol li.active");
+    if ($("#modal_versionesp").length == 1) {
+        match = $("ol li.active");
     }
 
     //Si no encuentra nada se trata de un documento y tenemos que buscar en otra parte
-    if(match[0]==null)
-    {
+    if (match[0] == null) {
         match = $("ol li.active");
         //si sigue sin encontrar nada estamos editando una factura con el plugin editar_faturas
-        if (match[0]==null){
-            match=$('h2 small');
+        if (match[0] == null) {
+            match = $('h2 small');
         }
     }
 
@@ -59,13 +56,13 @@ $(document).ready(function () {
 
     //************************************************************************
     //Controlamos las mutaciones
-    counter=0;
+    counter = 0;
     //Donde hay que observar las mutaciones
     var target = $("#lineas_albaran").get(0);
 
-    if (target!=null){
+    if (target != null) {
         // crear instancia observer
-        var observer = new MutationObserver(function(mutations) {
+        var observer = new MutationObserver(function (mutations) {
             mutation_observer_callback(mutations);
         });
 
@@ -79,19 +76,18 @@ $(document).ready(function () {
     }
 
 
-
     //***************************************************************************
 
     //Guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
-    $('.btn-primary').click(function() {
+    $('.btn-primary').click(function () {
 
-        var bcodigo=match.text();
+        var bcodigo = match.text();
 
-        if(bcodigo!=''){
-            var bneto=parseFloat($('#b_neto').text().replace(',', '.'));
-            var bcoste=parseFloat($('#b_coste').text().replace(',', '.'));
-            var bbeneficio=parseFloat($('#b_beneficio').text().replace(',', '.'));
-            var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
+        if (bcodigo != '') {
+            var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
+            var bcoste = parseFloat($('#b_coste').text().replace(',', '.'));
+            var bbeneficio = parseFloat($('#b_beneficio').text().replace(',', '.'));
+            var array_beneficios = [bcodigo, bneto, bcoste, bbeneficio];
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
@@ -102,16 +98,16 @@ $(document).ready(function () {
     });
 
 
-     //Guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
-    $('#btn_guardar1, #btn_guardar2').click(function() {
+    //Guardar datos en la bdd cuando pulsamos el botón Guardar en nueva_venta
+    $('#btn_guardar1, #btn_guardar2').click(function () {
 
-        var bcodigo=$('input[name="tipo"]:checked').val();
+        var bcodigo = $('input[name="tipo"]:checked').val();
 
-        if(bcodigo!=''){
-            var bneto=parseFloat($('#b_neto').text().replace(',', '.'));
-            var bcoste=parseFloat($('#b_coste').text().replace(',', '.'));
-            var bbeneficio=parseFloat($('#b_beneficio').text().replace(',', '.'));
-            var array_beneficios=[bcodigo, bneto, bcoste, bbeneficio];
+        if (bcodigo != '') {
+            var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
+            var bcoste = parseFloat($('#b_coste').text().replace(',', '.'));
+            var bbeneficio = parseFloat($('#b_beneficio').text().replace(',', '.'));
+            var array_beneficios = [bcodigo, bneto, bcoste, bbeneficio];
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
@@ -123,10 +119,10 @@ $(document).ready(function () {
 
 
     //Eliminar datos cuando se elimina un documento
-    $('.modal-footer .btn-danger').click(function() {
-        var bcodigo=match.text();
-       // alert(bcodigo);
-        if(bcodigo!=''){
+    $('.modal-footer .btn-danger').click(function () {
+        var bcodigo = match.text();
+        // alert(bcodigo);
+        if (bcodigo != '') {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
@@ -139,69 +135,78 @@ $(document).ready(function () {
 });
 
 
-
 // Función que controla las mutaciones
 function mutation_observer_callback(mutations) {
 
     // acciones a realizar por cada mutación
     var mutationRecord = mutations[0];
     // acciones a realizar por cada mutación
-    if (mutationRecord.addedNodes[0] !== undefined ){
+    if (mutationRecord.addedNodes[0] !== undefined) {
         //agregar onchange
-        var cantidad = document.getElementById('cantidad_'+counter);
+        var cantidad = document.getElementById('cantidad_' + counter);
         cantidad.addEventListener(
             'change',
-            function() { show_msg(); },
+            function () {
+                show_msg();
+            },
             true
         );
-        var pvp = document.getElementById('pvp_'+counter);
+        var pvp = document.getElementById('pvp_' + counter);
         pvp.addEventListener(
             'change',
-            function() { show_msg(); },
+            function () {
+                show_msg();
+            },
             true
         );
-        var dto = document.getElementById('dto_'+counter);
+        var dto = document.getElementById('dto_' + counter);
         dto.addEventListener(
             'change',
-            function() { show_msg(); },
+            function () {
+                show_msg();
+            },
             true
         );
         //lanzar el mensaje e incrementar el contador
         show_msg();
         counter++;
-    }
-    else if( mutationRecord.removedNodes[0] !== undefined){
-            show_msg();
-        }
-        else{
-            //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
-            var rowCount = $('#lineas_albaran tr').length;
+    } else if (mutationRecord.removedNodes[0] !== undefined) {
+        show_msg();
+    } else {
+        //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
+        var rowCount = $('#lineas_albaran tr').length;
 
-            for (i=0;i<rowCount;i++){
-                var lineacant = document.getElementById('cantidad_'+i);
-                if (lineacant != null) {
-                    lineacant.addEventListener(
-                        'change',
-                        function() { show_msg(); },
-                        true
-                    );
-                    var lineapvp = document.getElementById('pvp_'+i);
-                    lineapvp.addEventListener(
-                        'change',
-                        function() { show_msg(); },
-                        true
-                    );
-                    var lineadto = document.getElementById('dto_'+i);
-                    lineadto.addEventListener(
-                        'change',
-                        function() { show_msg(); },
-                        true
-                    );
-                    counter++;
-                }
-
+        for (i = 0; i < rowCount; i++) {
+            var lineacant = document.getElementById('cantidad_' + i);
+            if (lineacant != null) {
+                lineacant.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+                var lineapvp = document.getElementById('pvp_' + i);
+                lineapvp.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+                var lineadto = document.getElementById('dto_' + i);
+                lineadto.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+                counter++;
             }
+
         }
+    }
 
 }
 
@@ -217,11 +222,11 @@ function show_msg() {
     });
 
     //variable que contiene el neto
-    var neto=parseFloat($('#aneto').text());
+    var neto = parseFloat($('#aneto').text());
     //variable que contiene las cantidades del articulo
     var cantidad = document.querySelectorAll('input[id^="cantidad_"]');
     //array con todas las cantidades
-    var cantidades=[];
+    var cantidades = [];
     for (var index = 0; index < cantidad.length; index++) {
         cantidades.push(cantidad[index].value);
     }
@@ -237,7 +242,7 @@ function show_msg() {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({docs: docs, cantidades:cantidades, neto:neto}),
+        data: ({docs: docs, cantidades: cantidades, neto: neto}),
         dataType: 'html',
         success: finished
     });
@@ -245,9 +250,9 @@ function show_msg() {
 
 //función para insertar el resultado
 function finished(result) {
-    var div=$('#beneficios');
+    var div = $('#beneficios');
     //controlamos que no exista ya información para evitar duplicidades
-    if( div.is(':empty') ) {
+    if (div.is(':empty')) {
         //insertamos el resultado
         div.append(result);
     }

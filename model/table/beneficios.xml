@@ -5,4 +5,31 @@
         Estructura de la tabla beneficios.
 -->
 <tabla>
-    <columna><nombre>codigo</nombre><tipo>varchar(20)</tipo><nulo>NO</nulo></columna><columna><nombre>precioneto</nombre><tipo>double precision</tipo><nulo>NO</nulo><defecto>0</defecto></columna><columna><nombre>preciocoste</nombre><tipo>double precision</tipo><nulo>NO</nulo><defecto>0</defecto></columna><columna><nombre>beneficio</nombre><tipo>double precision</tipo><nulo>NO</nulo><defecto>0</defecto></columna><restriccion><nombre>beneficios_pkey</nombre><consulta>PRIMARY KEY (codigo)</consulta></restriccion></tabla>
+    <columna>
+        <nombre>codigo</nombre>
+        <tipo>varchar(20)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>precioneto</nombre>
+        <tipo>double precision</tipo>
+        <nulo>NO</nulo>
+        <defecto>0</defecto>
+    </columna>
+    <columna>
+        <nombre>preciocoste</nombre>
+        <tipo>double precision</tipo>
+        <nulo>NO</nulo>
+        <defecto>0</defecto>
+    </columna>
+    <columna>
+        <nombre>beneficio</nombre>
+        <tipo>double precision</tipo>
+        <nulo>NO</nulo>
+        <defecto>0</defecto>
+    </columna>
+    <restriccion>
+        <nombre>beneficios_pkey</nombre>
+        <consulta>PRIMARY KEY (codigo)</consulta>
+    </restriccion>
+</tabla>
