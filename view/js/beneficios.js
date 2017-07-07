@@ -22,15 +22,15 @@ $(document).ready(function () {
     var match = $("table tr.clickableRow.success a").not('.cancel_clickable');
 
     //Si hay versiones de presupuesto solo recogemos el que hemos abierto
-    if ($("#modal_versionesp").length == 1) {
+    if ($("#modal_versionesp").length === 1) {
         match = $("ol li.active");
     }
 
     //Si no encuentra nada se trata de un documento y tenemos que buscar en otra parte
-    if (match[0] == null) {
+    if (match[0] === null) {
         match = $("ol li.active");
         //si sigue sin encontrar nada estamos editando una factura con el plugin editar_faturas
-        if (match[0] == null) {
+        if (match[0] === null) {
             match = $('h2 small');
         }
     }
@@ -83,7 +83,7 @@ $(document).ready(function () {
 
         var bcodigo = match.text();
 
-        if (bcodigo != '') {
+        if (bcodigo !== '') {
             var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
             var bcoste = parseFloat($('#b_coste').text().replace(',', '.'));
             var bbeneficio = parseFloat($('#b_beneficio').text().replace(',', '.'));
@@ -103,7 +103,7 @@ $(document).ready(function () {
 
         var bcodigo = $('input[name="tipo"]:checked').val();
 
-        if (bcodigo != '') {
+        if (bcodigo !== '') {
             var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
             var bcoste = parseFloat($('#b_coste').text().replace(',', '.'));
             var bbeneficio = parseFloat($('#b_beneficio').text().replace(',', '.'));
@@ -122,7 +122,7 @@ $(document).ready(function () {
     $('.modal-footer .btn-danger').click(function () {
         var bcodigo = match.text();
         // alert(bcodigo);
-        if (bcodigo != '') {
+        if (bcodigo !== '') {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
@@ -176,9 +176,9 @@ function mutation_observer_callback(mutations) {
         //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
         var rowCount = $('#lineas_albaran tr').length;
 
-        for (i = 0; i < rowCount; i++) {
+        for (var i = 0; i < rowCount; i++) {
             var lineacant = document.getElementById('cantidad_' + i);
-            if (lineacant != null) {
+            if (lineacant !== null) {
                 lineacant.addEventListener(
                     'change',
                     function () {

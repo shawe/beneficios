@@ -40,9 +40,9 @@ class beneficio extends fs_model
         parent::__construct('beneficios');
         if ($d) {
             $this->codigo = $d['codigo'];
-            $this->precioneto = floatval($d['precioneto']);
-            $this->preciocoste = floatval($d['preciocoste']);
-            $this->total_beneficio = floatval($d['beneficio']);
+            $this->precioneto = (float)$d['precioneto'];
+            $this->preciocoste = (float)$d['preciocoste'];
+            $this->total_beneficio = (float)$d['beneficio'];
         } else {
             /// valores predeterminados
             $this->codigo = null;
@@ -65,11 +65,12 @@ class beneficio extends fs_model
      */
     public function exists()
     {
-        if (is_null($this->codigo)) {
+        if ($this->codigo === null) {
             return false;
-        } else {
-            return $this->db->select('SELECT * FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';');
         }
+
+        $sql = 'SELECT * FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';';
+        return $this->db->select($sql);
     }
 
     /**
@@ -78,21 +79,26 @@ class beneficio extends fs_model
     public function save()
     {
         if ($this->exists()) {
-            /// UPDATE beneficios SET ... WHERE ...;
-            $sql = " UPDATE beneficios SET precioneto = " . $this->var2str($this->precioneto) . ", preciocoste = " . $this->var2str($this->preciocoste) . ", beneficio = " . $this->var2str($this->total_beneficio) . "
-                WHERE codigo = " . $this->var2str($this->codigo) . ";";
+            $sql = 'UPDATE beneficios SET precioneto = ' . $this->var2str($this->precioneto)
+                . ', preciocoste = ' . $this->var2str($this->preciocoste)
+                . ', beneficio = ' . $this->var2str($this->total_beneficio)
+                . ' WHERE codigo = ' . $this->var2str($this->codigo) . ';';
             return $this->db->exec($sql);
-        } else {
-            /// INSERT INTO beneficios (...) VALUES (...);
-            $sql = "INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio)
-                VALUES (" . $this->var2str($this->codigo) . "," . $this->var2str($this->precioneto) . "," . $this->var2str($this->preciocoste) . "," . $this->var2str($this->total_beneficio) . ");";
-            if ($this->db->exec($sql)) {
-                $this->codigo = $this->db->lastval();
-                return true;
-            } else {
-                return false;
-            }
         }
+
+        /// INSERT INTO beneficios (...) VALUES (...);
+        $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
+            . $this->var2str($this->codigo)
+            . ',' . $this->var2str($this->precioneto)
+            . ',' . $this->var2str($this->preciocoste)
+            . ',' . $this->var2str($this->total_beneficio)
+            . ');';
+        if ($this->db->exec($sql)) {
+            $this->codigo = $this->db->lastval();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -100,7 +106,8 @@ class beneficio extends fs_model
      */
     public function delete()
     {
-        return $this->db->exec('DELETE FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';');
+        $sql = 'DELETE FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';';
+        return $this->db->exec($sql);
     }
 
     /**
@@ -114,18 +121,18 @@ class beneficio extends fs_model
     {
         sleep(1);
 
-        if ($tablax == 'albaran') {
+        if ($tablax === 'albaran') {
             $tabla = $tablax . 'escli';
         } else {
             $tabla = $tablax . 'scli';
         }
 
-        $lastcodigo = "";
-        $sql = "SELECT codigo, id" . $tablax . " FROM " . $tabla . " ORDER BY id" . $tablax . " DESC LIMIT 1 ;";
+        $lastcodigo = '';
+        $sql = 'SELECT codigo, id' . $tablax . ' FROM ' . $tabla . ' ORDER BY id' . $tablax . ' DESC LIMIT 1 ;';
         $data = $this->db->select($sql);
         if ($data) {
             foreach ($data as $d) {
-                $lastcodigo = $d["codigo"];
+                $lastcodigo = $d['codigo'];
             }
         }
         return $lastcodigo;
@@ -133,12 +140,15 @@ class beneficio extends fs_model
 
     /**
      * Recoge los datos de los documentos solicitados existentes en la bdd beneficios
+     *
+     * @param $array_documentos
+     *
+     * @return array
      */
     public function collect($array_documentos)
     {
-
         $lista = [];
-        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . implode("','", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {
