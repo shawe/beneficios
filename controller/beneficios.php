@@ -114,7 +114,8 @@ class beneficios extends fs_controller {
                    $totalbeneficio_bdd=0;
 
                    //comprovar códigos existentes en la bdd
-                   $this->documentos_bdd=$this->collect($this->documentos);
+                   $ben= new beneficio();
+                   $this->documentos_bdd=$ben->collect($this->documentos);
                    //recogemos los datos de la bdd y sumamos
                    foreach ($this->documentos_bdd as $d){
                        $totalneto_bdd = $totalneto_bdd + $d['precioneto'];
@@ -413,21 +414,5 @@ class beneficios extends fs_controller {
        $this->beneficio->save();
    }
 
-    //Recoge los datos de los documentos solicitados existentes en la bdd beneficios
-    public function collect($array_documentos){
-
-        $lista=array();
-        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
-
-        $data=$this->db->select($sql);
-        if ($data)
-        {
-            foreach($data as $d){
-                $lista[]=$d;
-            }
-        }
-
-        return $lista;
-    }
-
+  
 }
