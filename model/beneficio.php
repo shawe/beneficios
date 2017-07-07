@@ -100,6 +100,22 @@ class beneficio extends fs_model
         return $lastcodigo;
     }
 
+    //Recoge los datos de los documentos solicitados existentes en la bdd beneficios
+    public function collect($array_documentos){
+
+        $lista=array();
+        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+
+        $data=$this->db->select($sql);
+        if ($data)
+        {
+            foreach($data as $d){
+                $lista[]=$d;
+            }
+        }
+
+        return $lista;
+    }
     //recoge todos los codigos pasados en el array existentes en la bdd beneficios
    /* public function getcodigo($array_documentos){
         $lista=array();
