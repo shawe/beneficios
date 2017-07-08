@@ -152,7 +152,7 @@ class beneficio extends fs_model
     public function getByCodigo($array_documentos)
     {
         $lista = [];
-        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . implode("','", $array_documentos) . "')";
+        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {

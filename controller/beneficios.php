@@ -259,7 +259,7 @@ class beneficios extends fs_controller
 
         // Buscamos los netos de las facturas recibidas en $array_documentos
         $sql = 'SELECT neto FROM ' . $this->table
-            . " WHERE codigo IN ('" . implode("','", $array_documentos) . "')";
+            . " WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
         $data = $this->db->select($sql);
         if ($data) {
             foreach ($data as $d) {
@@ -363,7 +363,7 @@ class beneficios extends fs_controller
                 . ' FROM articulos, ' . $this->table
                 . ' LEFT JOIN lineas' . $this->table . ' ON lineas' . $this->table . '.id' . $doc . ' = ' . $this->table . '.id' . $doc
                 . ' WHERE lineas' . $this->table . '.referencia = articulos.referencia AND '
-                . $this->table . ".codigo IN ('" . implode("','", $array_documentos) . "')";
+                . $this->table . ".codigo IN ('" . implode("', '", $array_documentos) . "')";
 
             $data = $this->db->select($sql);
             if ($data) {

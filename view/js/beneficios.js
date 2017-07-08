@@ -18,6 +18,9 @@
  */
 
 $(document).ready(function () {
+    // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
+    //var userQuery = getQuery();
+
     // Recogemos los codigos de los documentos en el listado
     var match = $("table tr.clickableRow.success a").not('.cancel_clickable');
 
@@ -259,3 +262,10 @@ function finished(result) {
 
 }
 
+function getQuery() {
+    var userQuery = {};
+    location.search.substr(1).split('&').forEach(function (item) {
+        userQuery[item.split('=')[0]] = item.split('=')[1];
+    });
+    return userQuery;
+}
