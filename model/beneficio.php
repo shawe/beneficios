@@ -6,34 +6,30 @@
 class beneficio extends fs_model
 {
     /**
-     * clave primaria. varchar(20). código del documento
-     *
+     * Código del documento: clave primaria, character varying (20)
      * @var null
      */
     public $codigo;
     /**
-     * double.total neto del documento
-     *
-     * @var int
+     * Total neto del documento
+     * @var float
      */
     public $precioneto;
     /**
-     * double. total coste del documento
-     *
-     * @var int
+     * Total coste del documento
+     * @var float
      */
     public $preciocoste;
     /**
-     * double. total beneficio del documento
-     *
-     * @var int
+     * Total beneficio del documento
+     * @var float
      */
-    public $total_beneficio;
+    public $beneficio;
 
     /**
      * beneficio constructor.
      *
-     * @param bool $d
+     * @param bool|beneficio $d
      */
     public function __construct($d = false)
     {
@@ -42,17 +38,19 @@ class beneficio extends fs_model
             $this->codigo = $d['codigo'];
             $this->precioneto = (float)$d['precioneto'];
             $this->preciocoste = (float)$d['preciocoste'];
-            $this->total_beneficio = (float)$d['beneficio'];
+            $this->beneficio = (float)$d['beneficio'];
         } else {
             /// valores predeterminados
             $this->codigo = null;
             $this->precioneto = 0;
             $this->preciocoste = 0;
-            $this->total_beneficio = 0;
+            $this->beneficio = 0;
         }
     }
 
     /**
+     * TODO
+     *
      * @return string
      */
     public function install()
@@ -61,6 +59,8 @@ class beneficio extends fs_model
     }
 
     /**
+     * TODO
+     *
      * @return bool
      */
     public function exists()
@@ -74,6 +74,8 @@ class beneficio extends fs_model
     }
 
     /**
+     * TODO
+     *
      * @return bool
      */
     public function save()
@@ -81,7 +83,7 @@ class beneficio extends fs_model
         if ($this->exists()) {
             $sql = 'UPDATE beneficios SET precioneto = ' . $this->var2str($this->precioneto)
                 . ', preciocoste = ' . $this->var2str($this->preciocoste)
-                . ', beneficio = ' . $this->var2str($this->total_beneficio)
+                . ', beneficio = ' . $this->var2str($this->beneficio)
                 . ' WHERE codigo = ' . $this->var2str($this->codigo) . ';';
             return $this->db->exec($sql);
         }
@@ -89,9 +91,9 @@ class beneficio extends fs_model
         /// INSERT INTO beneficios (...) VALUES (...);
         $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
             . $this->var2str($this->codigo)
-            . ',' . $this->var2str($this->precioneto)
-            . ',' . $this->var2str($this->preciocoste)
-            . ',' . $this->var2str($this->total_beneficio)
+            . ', ' . $this->var2str($this->precioneto)
+            . ', ' . $this->var2str($this->preciocoste)
+            . ', ' . $this->var2str($this->beneficio)
             . ');';
         if ($this->db->exec($sql)) {
             $this->codigo = $this->db->lastval();
@@ -102,6 +104,8 @@ class beneficio extends fs_model
     }
 
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function delete()
@@ -111,7 +115,7 @@ class beneficio extends fs_model
     }
 
     /**
-     * recoge el ultimo codigo insertado en la tabla especificada (retrasamos un segundo para darle tiempo al insert)
+     * Recoge el ultimo codigo insertado en la tabla especificada (retrasamos un segundo para darle tiempo al insert)
      *
      * @param $tablax
      *
@@ -139,13 +143,13 @@ class beneficio extends fs_model
     }
 
     /**
-     * Recoge los datos de los documentos solicitados existentes en la bdd beneficios
+     * Recoge todos los codigos pasados en el array existentes en la bdd beneficios
      *
      * @param $array_documentos
      *
      * @return array
      */
-    public function collect($array_documentos)
+    public function getByCodigo($array_documentos)
     {
         $lista = [];
         $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . implode("','", $array_documentos) . "')";
@@ -153,7 +157,7 @@ class beneficio extends fs_model
         $data = $this->db->select($sql);
         if ($data) {
             foreach ($data as $d) {
-                $lista[] = $d;
+                $lista[] = new beneficio($d);
             }
         }
 
