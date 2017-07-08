@@ -164,7 +164,7 @@ class beneficios extends fs_controller
     {
         $this->share_extension();
         /// SOLO CAMBIAR EN MODO DESARROLLO
-        $this->test_mode = true;
+        $this->test_mode = FS_DB_HISTORY;
         // Mensajes por defecto
         $this->test = 'No se han recibido datos';
         $this->test2 = 'No se han recibido cantidades';
@@ -189,8 +189,8 @@ class beneficios extends fs_controller
             if (!empty($this->cantidades)) {
                 $this->neto = filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
                 $this->total_neto = $this->neto;
-                $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
-                $this->total_beneficio = $this->calc_beneficio($this->total_neto, $this->total_coste);
+                $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
+                $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
 
                 if ($this->test_mode) {
                     // Testear recepción de datos
@@ -221,9 +221,10 @@ class beneficios extends fs_controller
 
                     // Calculamos valores que no están en la bdd sobre el precio de coste actual del artículo
                     $this->table = $this->table($this->documentos);
-                    $this->total_neto = $this->totalneto($this->documentos);
-                    $this->total_coste = $this->totalcoste($this->documentos, $this->cantidades);
-                    $this->total_beneficio = $this->calc_beneficio($this->total_neto, $this->total_coste);
+                    $this->total_neto = $this->calcTotalNeto($this->documentos);
+                    $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
+                    $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
+
                     // Sumamos los valores que están en la bdd y los que no están
                     $this->total_neto += $totalneto_bdd;
                     $this->total_coste += $totalcoste_bdd;
@@ -252,7 +253,7 @@ class beneficios extends fs_controller
      *
      * @return float
      */
-    private function totalneto($array_documentos)
+    private function calcTotalNeto($array_documentos)
     {
         $totalneto = 0;
 
@@ -277,9 +278,9 @@ class beneficios extends fs_controller
      *
      * @return float
      */
-    private function calc_beneficio($total_neto, $total_coste)
+    private function calcBeneficio($total_neto, $total_coste)
     {
-        return $total_neto - $total_coste;
+        return (float)($total_neto - $total_coste);
     }
 
     /**
@@ -322,7 +323,7 @@ class beneficios extends fs_controller
      *
      * @return float
      */
-    private function totalcoste($array_documentos, $array_cantidades)
+    private function calcTotalCoste($array_documentos, $array_cantidades)
     {
         $totalcoste = 0;
 
