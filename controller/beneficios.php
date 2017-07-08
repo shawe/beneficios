@@ -22,9 +22,17 @@ require_model('beneficio.php');
 
 /**
  * Clase beneficios
+ *
+ * Calcula la diferencia entre precio de venta y precio de coste para cada artículo para tener obtener el beneficio
  */
 class beneficios extends fs_controller
 {
+    /**
+     * Objeto modelo
+     * @var beneficio
+     */
+    public $beneficio;
+
     /**
      * Almacena un array de documentos/articulos de venta
      * @var array
@@ -86,20 +94,20 @@ class beneficios extends fs_controller
     public $total_coste_art;
 
     /**
-     * Objeto modelo
-     * @var beneficio
+     * Trabajar en modo test
+     * @var bool
      */
-    public $beneficio;
+    public $test_mode;
 
     /**
-     * Para testear
-     * @var type
+     * Información para modo test
+     * @var string
      */
     public $test;
 
     /**
-     * Para testear
-     * @var type
+     * Información para modo test
+     * @var string
      */
     public $test2;
 
@@ -161,9 +169,10 @@ class beneficios extends fs_controller
         // Buscamos los netos de las facturas recibidas en $array_documentos
         $sql = 'SELECT neto FROM ' . $this->table . " WHERE codigo IN ('" . implode("','", $array_documentos) . "')";
         $data = $this->db->select($sql);
-
-        foreach ($data as $d) {
-            $totalneto += $d['neto'];
+        if ($data) {
+            foreach ($data as $d) {
+                $totalneto += $d['neto'];
+            }
         }
 
         return (float)$totalneto;
@@ -177,7 +186,7 @@ class beneficios extends fs_controller
      *
      * @return float
      */
-    public function totalcoste($array_documentos, $array_cantidades)
+    private function totalcoste($array_documentos, $array_cantidades)
     {
         $totalcoste = 0;
 
@@ -185,7 +194,7 @@ class beneficios extends fs_controller
         if (!empty($this->cantidades)) {
             // Buscamos los costes de los articulos recibidos en $array_documentos
             foreach ($array_documentos as $key => $document) {
-                $sql = "SELECT preciocoste FROM articulos WHERE referencia='" . $document . "'";
+                $sql = "SELECT preciocoste FROM articulos WHERE referencia = '" . $document . "'";
                 $data = $this->db->select($sql);
 
                 foreach ($data as $d) {
@@ -193,7 +202,8 @@ class beneficios extends fs_controller
                 }
             }
         } else {
-            //si no hay información en $array_cantidades estamos tratando con documentos guardados y necesitamos saber a qué tabla pertenecen
+            // Si no hay información en $array_cantidades estamos tratando con documentos guardados y
+            // necesitamos saber a qué tabla pertenecen
             switch ($this->table) {
                 case 'facturascli':
                     $doc = 'factura';
@@ -201,7 +211,7 @@ class beneficios extends fs_controller
                 case 'albaranescli':
                     $doc = 'albaran';
                     break;
-                case 'pedidoscli';
+                case 'pedidoscli':
                     $doc = 'pedido';
                     break;
                 case 'presupuestoscli':
@@ -284,6 +294,11 @@ class beneficios extends fs_controller
     protected function private_core()
     {
         $this->share_extension();
+        /// SOLO CAMBIAR EN MODO DESARROLLO
+        $this->test_mode = true;
+        // Mensajes por defecto
+        $this->test = 'No se han recibido datos';
+        $this->test2 = 'No se han recibido cantidades';
 
         $this->test = '';
         $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -370,84 +385,94 @@ class beneficios extends fs_controller
      */
     private function share_extension()
     {
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_facturas';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_facturas';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
+        $jsPath = '<script type="text/javascript" src="' . FS_PATH . 'plugins/beneficios/view/js/beneficios.js">';
+        $jsPath .= '</script>';
 
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_albaranes';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_albaranes';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_pedidos';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_pedidos';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_presupuestos';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_presupuestos';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_factura';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_factura';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_albaran';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_albaran';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_pedido';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_pedido';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_presupuesto';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'ventas_presupuesto';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_nueva_venta';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'nueva_venta';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
-
-        $fsext = new fs_extension();
-        $fsext->name = 'beneficios_editar_factura';
-        $fsext->from = __CLASS__;
-        $fsext->to = 'editar_factura';
-        $fsext->type = 'head';
-        $fsext->text = ' <script type="text/javascript" src="plugins/beneficios/view/js/beneficios.js"></script>';
-        $fsext->save();
+        $extensions = [
+            [
+                'name' => 'beneficios_facturas',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_facturas',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_albaranes',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_albaranes',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_pedidos',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_pedidos',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_presupuestos',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_presupuestos',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_factura',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_factura',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_albaran',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_albaran',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_pedido',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_pedido',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_presupuesto',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_presupuesto',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_nueva_venta',
+                'page_from' => __CLASS__,
+                'page_to' => 'nueva_venta',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ],
+            [
+                'name' => 'beneficios_editar_factura',
+                'page_from' => __CLASS__,
+                'page_to' => 'editar_factura',
+                'type' => 'head',
+                'text' => $jsPath,
+                'params' => ''
+            ]
+        ];
+        foreach ($extensions as $ext) {
+            $fsext = new fs_extension($ext);
+            $fsext->save();
+        }
     }
 }
