@@ -59,7 +59,7 @@ class beneficio extends fs_model
     }
 
     /**
-     * TODO
+     * Devuelve si el registro existe o no en la tabla
      *
      * @return bool
      */
@@ -74,7 +74,7 @@ class beneficio extends fs_model
     }
 
     /**
-     * TODO
+     * Comprueba si el registro existe, si existe, lo actualiza y sino lo inserta
      *
      * @return bool
      */
@@ -88,7 +88,6 @@ class beneficio extends fs_model
             return $this->db->exec($sql);
         }
 
-        /// INSERT INTO beneficios (...) VALUES (...);
         $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
             . $this->var2str($this->codigo)
             . ', ' . $this->var2str($this->precioneto)
@@ -104,7 +103,7 @@ class beneficio extends fs_model
     }
 
     /**
-     * TODO
+     * Elimina un registro de la tabla identificado por código
      *
      * @return mixed
      */
@@ -164,78 +163,89 @@ class beneficio extends fs_model
         return $lista;
     }
 
-    //recoge todos los codigos pasados en el array existentes en la bdd beneficios
-    /* public function getcodigo($array_documentos){
-      $lista=array();
-      $sql = "SELECT codigo FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+    /**
+     * Recoge todos los netos de los códigos pasados en el array
+     *
+     * @param $array_documentos
+     *
+     * @return float
+     */
+    public function getNeto($array_documentos)
+    {
+        $resultado = 0;
+        $sql = "SELECT precioneto FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
 
-      $data=$this->db->select($sql);
-      if ($data)
-      {
-      foreach($data as $d){
-      $lista[]=new beneficio($d);
-      }
-      }
-      return $lista;
-      }
+        $data = $this->db->select($sql);
+        if ($data) {
+            foreach ($data as $d) {
+                $resultado += $d;
+            }
+        }
+        return (float)$resultado;
+    }
 
-      //recoge todos los netos de los códigos pasados en el array
-      public function getneto($array_documentos){
-      $resultado=0;
-      $sql = "SELECT precioneto FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+    /**
+     * Recoge todos los costes de los códigos pasados en el array
+     *
+     * @param $array_documentos
+     *
+     * @return float
+     */
+    public function getCoste($array_documentos)
+    {
+        $resultado = 0;
+        $sql = "SELECT preciocoste FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
 
-      $data=$this->db->select($sql);
-      if ($data)
-      {
-      foreach($data as $d){
-      $resultado=$resultado+$d;
-      }
-      }
-      return $resultado;
-      }
+        $data = $this->db->select($sql);
+        if ($data) {
+            foreach ($data as $d) {
+                $resultado += $d;
+            }
+        }
+        return (float)$resultado;
+    }
 
-      //recoge todos los costes de los códigos pasados en el array
-      public function getcoste($array_documentos){
-      $resultado=0;
-      $sql = "SELECT preciocoste FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+    /**
+     * Recoge todos los beneficios de los códigos pasados en el array
+     *
+     * @param $array_documentos
+     *
+     * @return float
+     */
+    public function getBeneficio($array_documentos)
+    {
+        $resultado = 0;
+        $sql = "SELECT beneficio FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
 
-      $data=$this->db->select($sql);
-      if ($data)
-      {
-      foreach($data as $d){
-      $resultado=$resultado+$d;
-      }
-      }
-      return $resultado;
-      }
+        $data = $this->db->select($sql);
+        if ($data) {
+            foreach ($data as $d) {
+                $resultado += $d;
+            }
+        }
+        return (float)$resultado;
+    }
 
-      //recoge todos los beneficios de los códigos pasados en el array
-      public function getbeneficio($array_documentos){
-      $resultado=0;
-      $sql = "SELECT beneficio FROM beneficios WHERE codigo IN ('" . join("','", $array_documentos) . "')";
+    /**
+     * Devuelve todos los registros de beneficios
+     *
+     * TODO: Esto es un poco suicida!
+     * Ya que no sabes la cantidad real de registros, lo suyo es paginarlo, hay otros modelos que lo hacen con
+     * paginación, que te pueden servir para tener un ejemplo.
+     *
+     * @return array
+     */
+    public function all()
+    {
+        $lista = [];
 
-      $data=$this->db->select($sql);
-      if ($data)
-      {
-      foreach($data as $d){
-      $resultado=$resultado+$d;
-      }
-      }
-      return $resultado;
-      }
+        $data = $this->db->select('SELECT * FROM beneficios ;');
+        if ($data) {
+            foreach ($data as $d) {
+                $lista[] = new beneficio($d);
+            }
+        }
 
-      public function all()
-      {
-      $lista=array();
-
-      $data=$this->db->select('SELECT * FROM beneficios ;');
-      if ($data)
-      {
-      foreach($data as $d){
-      $lista[]=new beneficio($d);
-      }
-      }
-
-      return $lista;
-      } */
+        return $lista;
+    }
 }

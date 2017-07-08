@@ -311,7 +311,7 @@ class beneficios extends fs_controller
 
         $this->beneficio->precioneto = $this->datos[1];
         $this->beneficio->preciocoste = $this->datos[2];
-        $this->beneficio->total_beneficio = $this->datos[3];
+        $this->beneficio->beneficio = $this->datos[3];
         $this->beneficio->save();
     }
 
