@@ -380,9 +380,9 @@
                         <th class="text-right" width="140">Total</th>
                      </tr>
                   </thead>
-                  <tbody id="lineas_albaran">
+                  <tbody id="lineas_documento">
                      {loop="$lineas"}
-                     <tr id="linea_{$counter}">
+                     <tr id="linea_{$counter}" data-ref="{$value->referencia}" data-line="{$value->idlinea}">
                         <td>
                            <input type="hidden" name="idlinea_{$counter}" value="{$value->idlinea}"/>
                            <input type="hidden" name="referencia_{$counter}" value="{$value->referencia}"/>
@@ -441,7 +441,7 @@
                      </tr>
                      {/loop}
                   </tbody>
-                  <tbody>
+                  <tfoot>
                      <tr class="info">
                         <td><input id="i_new_line" class="form-control" type="text" placeholder="Buscar para añadir..." autocomplete="off"/></td>
                         <td colspan="3">
@@ -476,7 +476,7 @@
                         <td class="text-right">{$fsc->show_precio($fsc->presupuesto->total, $fsc->presupuesto->coddivisa)}</td>
                      </tr>
                      {/if}
-                  </tbody>
+                  </tfoot>
                </table>
                {else}
                <table class="table table-hover">
@@ -493,48 +493,52 @@
                         <th class="text-right" width="90">Total</th>
                      </tr>
                   </thead>
-                  {loop="$lineas"}
-                  <tr>
-                     <td><a href="{$value->articulo_url()}">{$value->referencia}</a> {$value->descripcion()}</td>
-                     <td class="text-right">{$value->cantidad}</td>
-                     <td class="text-right">{$fsc->show_precio($value->pvpunitario, $fsc->presupuesto->coddivisa, TRUE, FS_NF0_ART)}</td>
-                     <td class="text-right">{$fsc->show_numero($value->dtopor, 2)} %</td>
-                     <td class="text-right">{$fsc->show_precio($value->pvptotal, $fsc->presupuesto->coddivisa)}</td>
-                     <td class="text-right">{$fsc->show_numero($value->iva, 2)} %</td>
-                     <td class="text-right recargo">{$fsc->show_numero($value->recargo, 2)} %</td>
-                     <td class="text-right irpf">{$fsc->show_numero($value->irpf, 2)} %</td>
-                     <td class="text-right">{$fsc->show_precio($value->total_iva(), $fsc->presupuesto->coddivisa)}</td>
-                  </tr>
-                  {else}
-                  <tr class="warning">
-                     <td colspan="9">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        &nbsp; No hay líneas.
-                     </td>
-                  </tr>
-                  {/loop}
-                  <tr>
-                     {if="$fsc->presupuesto->coddivisa!=$fsc->empresa->coddivisa"}
-                     <td colspan="4" class="text-right warning"><b>{$fsc->presupuesto->coddivisa}:</b></td>
+                  <tbody>
+                     {loop="$lineas"}
+                     <tr data-ref="{$value->referencia}" data-line="{$value->idlinea}">
+                        <td><a href="{$value->articulo_url()}">{$value->referencia}</a> {$value->descripcion()}</td>
+                        <td class="text-right">{$value->cantidad}</td>
+                        <td class="text-right">{$fsc->show_precio($value->pvpunitario, $fsc->presupuesto->coddivisa, TRUE, FS_NF0_ART)}</td>
+                        <td class="text-right">{$fsc->show_numero($value->dtopor, 2)} %</td>
+                        <td class="text-right">{$fsc->show_precio($value->pvptotal, $fsc->presupuesto->coddivisa)}</td>
+                        <td class="text-right">{$fsc->show_numero($value->iva, 2)} %</td>
+                        <td class="text-right recargo">{$fsc->show_numero($value->recargo, 2)} %</td>
+                        <td class="text-right irpf">{$fsc->show_numero($value->irpf, 2)} %</td>
+                        <td class="text-right">{$fsc->show_precio($value->total_iva(), $fsc->presupuesto->coddivisa)}</td>
+                     </tr>
                      {else}
-                     <td colspan="4"></td>
+                     <tr class="warning">
+                        <td colspan="9">
+                           <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                           &nbsp; No hay líneas.
+                        </td>
+                     </tr>
+                     {/loop}
+                  </tbody>
+                  <tfoot>
+                     <tr>
+                        {if="$fsc->presupuesto->coddivisa!=$fsc->empresa->coddivisa"}
+                        <td colspan="4" class="text-right warning"><b>{$fsc->presupuesto->coddivisa}:</b></td>
+                        {else}
+                        <td colspan="4"></td>
+                        {/if}
+                        <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->neto, $fsc->presupuesto->coddivisa)}</b></td>
+                        <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->totaliva, $fsc->presupuesto->coddivisa)}</b></td>
+                        <td class="text-right recargo"><b>{$fsc->show_precio($fsc->presupuesto->totalrecargo, $fsc->presupuesto->coddivisa)}</b></td>
+                        <td class="text-right irpf"><b>-{$fsc->show_precio($fsc->presupuesto->totalirpf, $fsc->presupuesto->coddivisa)}</b></td>
+                        <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->total, $fsc->presupuesto->coddivisa)}</b></td>
+                     </tr>
+                     {if="$fsc->presupuesto->coddivisa!=$fsc->empresa->coddivisa"}
+                     <tr class="warning">
+                        <td colspan="4" class="text-right"><b>{$fsc->empresa->coddivisa}:</b></td>
+                        <td></td>
+                        <td></td>
+                        <td class="recargo"></td>
+                        <td class="irpf"></td>
+                        <td class="text-right"><b>{$fsc->show_precio($fsc->euro_convert($fsc->presupuesto->totaleuros, $fsc->presupuesto->coddivisa, $fsc->presupuesto->tasaconv))}</b></td>
+                     </tr>
                      {/if}
-                     <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->neto, $fsc->presupuesto->coddivisa)}</b></td>
-                     <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->totaliva, $fsc->presupuesto->coddivisa)}</b></td>
-                     <td class="text-right recargo"><b>{$fsc->show_precio($fsc->presupuesto->totalrecargo, $fsc->presupuesto->coddivisa)}</b></td>
-                     <td class="text-right irpf"><b>-{$fsc->show_precio($fsc->presupuesto->totalirpf, $fsc->presupuesto->coddivisa)}</b></td>
-                     <td class="text-right"><b>{$fsc->show_precio($fsc->presupuesto->total, $fsc->presupuesto->coddivisa)}</b></td>
-                  </tr>
-                  {if="$fsc->presupuesto->coddivisa!=$fsc->empresa->coddivisa"}
-                  <tr class="warning">
-                     <td colspan="4" class="text-right"><b>{$fsc->empresa->coddivisa}:</b></td>
-                     <td></td>
-                     <td></td>
-                     <td class="recargo"></td>
-                     <td class="irpf"></td>
-                     <td class="text-right"><b>{$fsc->show_precio($fsc->euro_convert($fsc->presupuesto->totaleuros, $fsc->presupuesto->coddivisa, $fsc->presupuesto->tasaconv))}</b></td>
-                  </tr>
-                  {/if}
+                  </tfoot>
                </table>
                {/if}
             </div>

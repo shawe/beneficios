@@ -355,99 +355,103 @@
             <th class="text-right">Vencimiento</th>
          </tr>
       </thead>
-      {loop="$fsc->resultados"}
-      <tr class="clickableRow{if="$value->vencida() OR $value->anulada"} danger{elseif="$value->pagada"} success{elseif="$value->total<=0"} warning{/if}" href="{$value->url()}">
-         <td class="text-center">
-            {if="$value->pagada"}
-            <span class="glyphicon glyphicon-ok" title="La factura está pagada"></span>
-            {/if}
-            {if="$value->anulada"}
-            <span class="glyphicon glyphicon-remove" title="La factura está anulada"></span>
-            {/if}
-            {if="$value->idfacturarect"}
-            <span class="glyphicon glyphicon-flag" title="{#FS_FACTURA_RECTIFICATIVA#} de {$value->codigorect}"></span>
-            {/if}
-            {if="$value->femail"}
-            <span class="glyphicon glyphicon-send" title="La factura fue enviada por email el {$value->femail}"></span>
-            {/if}
-            {if="$value->envio_codtrans AND $value->envio_codigo"}
-            <span class="glyphicon glyphicon-plane" title="Mercancía enviada"></span>
-            {/if}
-         </td>
-         <td class="text-center">
-            {if="$value->idasiento"}
-            <span class="glyphicon glyphicon-paperclip" title="La factura tiene vinculado un asiento contable"></span>
-            {/if}
-         </td>
-         <td>
-            <a href="{$value->url()}">{$value->codigo}</a> {$value->numero2}
-            {if="$value->totaliva==0"}<span class="label label-warning">Sin {#FS_IVA#}</span>{/if}
-            {if="$value->totalrecargo!=0"}<span class="label label-default">RE</span>{/if}
-            {if="$value->totalirpf!=0"}<span class="label label-default">{#FS_IRPF#}</span>{/if}
-         </td>
-         <td>
-            {$value->nombrecliente}
-            {if="$value->codcliente"}
-            <a href="{$fsc->url()}&codcliente={$value->codcliente}" class="cancel_clickable" title="Ver más facturas de {$value->nombrecliente}">[+]</a>
-            {else}
-            <span class="label label-danger" title="Cliente desconocido">???</span>
-            {/if}
-            {if="!$value->cifnif"}<span class="label label-warning" title="Sin {#FS_CIFNIF#}"><s>{#FS_CIFNIF#}</s></span>{/if}
-         </td>
-         <td class="text-right hidden-sm">
-            <span title="{$value->numdocs} documentos adjuntos">
-               {if="$value->numdocs==1"}
-               <i class="fa fa-file" aria-hidden="true"></i>
-               {elseif="$value->numdocs>1"}
-               {$value->numdocs} <i class="fa fa-file" aria-hidden="true"></i>
+      <tbody>
+         {loop="$fsc->resultados"}
+         <tr class="clickableRow{if="$value->vencida() OR $value->anulada"} danger{elseif="$value->pagada"} success{elseif="$value->total<=0"} warning{/if}" href="{$value->url()}" data-codigo="{$value->codigo}">
+            <td class="text-center">
+               {if="$value->pagada"}
+               <span class="glyphicon glyphicon-ok" title="La factura está pagada"></span>
                {/if}
-            </span>
-         </td>
-         <td>{$value->observaciones_resume()}</td>
-         <td class="text-right" title="{$fsc->show_precio($fsc->euro_convert($value->totaleuros, $value->coddivisa, $value->tasaconv))}">
-            {$fsc->show_precio($value->total, $value->coddivisa)}
-         </td>
-         {if="$fsc->codagente!==''"}
-         <td class="text-right info">
-            {$fsc->show_precio($value->neto*$value->porcomision/100, $value->coddivisa)}
-         </td>
-         <td class="text-left">{$fsc->show_numero($value->porcomision)}</td>
+               {if="$value->anulada"}
+               <span class="glyphicon glyphicon-remove" title="La factura está anulada"></span>
+               {/if}
+               {if="$value->idfacturarect"}
+               <span class="glyphicon glyphicon-flag" title="{#FS_FACTURA_RECTIFICATIVA#} de {$value->codigorect}"></span>
+               {/if}
+               {if="$value->femail"}
+               <span class="glyphicon glyphicon-send" title="La factura fue enviada por email el {$value->femail}"></span>
+               {/if}
+               {if="$value->envio_codtrans AND $value->envio_codigo"}
+               <span class="glyphicon glyphicon-plane" title="Mercancía enviada"></span>
+               {/if}
+            </td>
+            <td class="text-center">
+               {if="$value->idasiento"}
+               <span class="glyphicon glyphicon-paperclip" title="La factura tiene vinculado un asiento contable"></span>
+               {/if}
+            </td>
+            <td>
+               <a href="{$value->url()}">{$value->codigo}</a> {$value->numero2}
+               {if="$value->totaliva==0"}<span class="label label-warning">Sin {#FS_IVA#}</span>{/if}
+               {if="$value->totalrecargo!=0"}<span class="label label-default">RE</span>{/if}
+               {if="$value->totalirpf!=0"}<span class="label label-default">{#FS_IRPF#}</span>{/if}
+            </td>
+            <td>
+               {$value->nombrecliente}
+               {if="$value->codcliente"}
+               <a href="{$fsc->url()}&codcliente={$value->codcliente}" class="cancel_clickable" title="Ver más facturas de {$value->nombrecliente}">[+]</a>
+               {else}
+               <span class="label label-danger" title="Cliente desconocido">???</span>
+               {/if}
+               {if="!$value->cifnif"}<span class="label label-warning" title="Sin {#FS_CIFNIF#}"><s>{#FS_CIFNIF#}</s></span>{/if}
+            </td>
+            <td class="text-right hidden-sm">
+               <span title="{$value->numdocs} documentos adjuntos">
+                  {if="$value->numdocs==1"}
+                  <i class="fa fa-file" aria-hidden="true"></i>
+                  {elseif="$value->numdocs>1"}
+                  {$value->numdocs} <i class="fa fa-file" aria-hidden="true"></i>
+                  {/if}
+               </span>
+            </td>
+            <td>{$value->observaciones_resume()}</td>
+            <td class="text-right" title="{$fsc->show_precio($fsc->euro_convert($value->totaleuros, $value->coddivisa, $value->tasaconv))}">
+               {$fsc->show_precio($value->total, $value->coddivisa)}
+            </td>
+            {if="$fsc->codagente!==''"}
+            <td class="text-right info">
+               {$fsc->show_precio($value->neto*$value->porcomision/100, $value->coddivisa)}
+            </td>
+            <td class="text-left">{$fsc->show_numero($value->porcomision)}</td>
+            {/if}
+            <td class="text-right" title="Hora {$value->hora}">
+               {if="$value->fecha==$fsc->today()"}<b>{$value->fecha}</b>{else}{$value->fecha}{/if}
+            </td>
+            <td class="text-right">
+               {if="$value->vencimiento==$fsc->today()"}<b>{$value->vencimiento}</b>{else}{$value->vencimiento}{/if}
+            </td>
+         </tr>
+         {else}
+         <tr class="warning">
+            <td></td>
+            <td></td>
+            <td colspan="6">Ninguna factura encontrada. Pulsa <b>Nueva</b> para crear una.</td>
+            <th class="hidden-sm"></th>
+            {if="$fsc->codagente!==''"}
+            <td></td>
+            <td></td>
+            {/if}
+         </tr>
+         {/loop}
+      </tbody>
+      <tfoot>
+         {if="$fsc->total_resultados"}
+         <tr>
+            <th class="hidden-sm"></th>
+            <td colspan="6" class="text-right">
+               {$fsc->total_resultados_txt}
+               {loop="$fsc->total_resultados"}
+               <br/><b>{$fsc->show_precio($value['total'],$value['coddivisa'],FALSE)}</b>
+               {/loop}
+            </td>
+            {if="$fsc->codagente!==''"}
+            <td class="text-right"><b>{$fsc->show_precio($fsc->total_resultados_comision)}</b></td>
+            <td></td>
+            {/if}
+            <td colspan="2"></td>
+         </tr>
          {/if}
-         <td class="text-right" title="Hora {$value->hora}">
-            {if="$value->fecha==$fsc->today()"}<b>{$value->fecha}</b>{else}{$value->fecha}{/if}
-         </td>
-         <td class="text-right">
-            {if="$value->vencimiento==$fsc->today()"}<b>{$value->vencimiento}</b>{else}{$value->vencimiento}{/if}
-         </td>
-      </tr>
-      {else}
-      <tr class="warning">
-         <td></td>
-         <td></td>
-         <td colspan="6">Ninguna factura encontrada. Pulsa <b>Nueva</b> para crear una.</td>
-         <th class="hidden-sm"></th>
-         {if="$fsc->codagente!==''"}
-         <td></td>
-         <td></td>
-         {/if}
-      </tr>
-      {/loop}
-      {if="$fsc->total_resultados"}
-      <tr>
-         <th class="hidden-sm"></th>
-         <td colspan="6" class="text-right">
-            {$fsc->total_resultados_txt}
-            {loop="$fsc->total_resultados"}
-            <br/><b>{$fsc->show_precio($value['total'],$value['coddivisa'],FALSE)}</b>
-            {/loop}
-         </td>
-         {if="$fsc->codagente!==''"}
-         <td class="text-right"><b>{$fsc->show_precio($fsc->total_resultados_comision)}</b></td>
-         <td></td>
-         {/if}
-         <td colspan="2"></td>
-      </tr>
-      {/if}
+      </tfoot>
    </table>
 </div>
 

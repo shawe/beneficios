@@ -61,7 +61,7 @@ $(document).ready(function () {
     //Controlamos las mutaciones
     counter = 0;
     //Donde hay que observar las mutaciones
-    var target = $("#lineas_albaran").get(0);
+    var target = $("#lineas_documento").get(0);
 
     if (target != null) {
         // crear instancia observer
@@ -177,7 +177,7 @@ function mutation_observer_callback(mutations) {
         show_msg();
     } else {
         //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
-        var rowCount = $('#lineas_albaran tr').length;
+        var rowCount = $('#lineas_documento tr').length;
 
         for (var i = 0; i < rowCount; i++) {
             var lineacant = document.getElementById('cantidad_' + i);
