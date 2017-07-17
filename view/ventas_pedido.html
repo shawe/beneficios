@@ -379,7 +379,7 @@
                         <th class="text-right" width="140">Total</th>
                      </tr>
                   </thead>
-                  <tbody id="lineas_documento">
+                  <tbody id="lineas_documento" data-codigo="{$fsc->pedido->codigo}">
                      {loop="$lineas"}
                      <tr id="linea_{$counter}" data-ref="{$value->referencia}" data-line="{$value->idlinea}">
                         <td>

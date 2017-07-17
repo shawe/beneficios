@@ -19,11 +19,19 @@
 
 $(document).ready(function () {
     // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
-    //var userQuery = getQuery();
+    var userQuery = getQuery();
+    //alert(userQuery.id);
+    //alert(userQuery.page);
 
-    // Recogemos los codigos de los documentos en el listado
-    var match = $("table tr.clickableRow.success a").not('.cancel_clickable');
+    // Recogemos los codigos de los documentos en el listado y los ponemos en el array docs
+    var docs=[];
+    $("[data-codigo]").each(function(){
+        docs.push($(this).attr("data-codigo"));
+    });
 
+    alert(docs);
+
+    /*var match="";
     //Si hay versiones de presupuesto solo recogemos el que hemos abierto
     if ($("#modal_versionesp").length === 1) {
         match = $("ol li.active");
@@ -36,13 +44,8 @@ $(document).ready(function () {
         if (match[0] === null) {
             match = $('h2 small');
         }
-    }
+    }*/
 
-    // Array con los codigos de todos los documentos
-    var docs = [];
-    $(match).each(function () {
-        docs.push($(this).text());
-    });
 
     // Añadimos el div donde irá la información
     var html = '<div id="beneficios" class="table-responsive"></div>';
