@@ -86,20 +86,18 @@ class beneficio extends fs_model
                 . ', beneficio = ' . $this->var2str($this->beneficio)
                 . ' WHERE codigo = ' . $this->var2str($this->codigo) . ';';
             return $this->db->exec($sql);
+        } else {
+            $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
+                . $this->var2str($this->codigo)
+                . ', ' . $this->var2str($this->precioneto)
+                . ', ' . $this->var2str($this->preciocoste)
+                . ', ' . $this->var2str($this->beneficio)
+                . ');';
+            if ($this->db->exec($sql)) {
+                $this->codigo = $this->db->lastval();
+                return true;
+            }else return false;
         }
-
-        $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
-            . $this->var2str($this->codigo)
-            . ', ' . $this->var2str($this->precioneto)
-            . ', ' . $this->var2str($this->preciocoste)
-            . ', ' . $this->var2str($this->beneficio)
-            . ');';
-        if ($this->db->exec($sql)) {
-            $this->codigo = $this->db->lastval();
-            return true;
-        }
-
-        return false;
     }
 
     /**
