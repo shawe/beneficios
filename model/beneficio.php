@@ -118,9 +118,8 @@ class beneficio extends fs_model
                 . ', beneficio = ' . $this->var2str($this->beneficio)
                 . ' WHERE id = ' . $this->var2str($this->id) . ';';
             return $this->db->exec($sql);
-        }
-
-        $sql = 'INSERT INTO beneficios (id, codigo_pre, codigo_ped, codigo_alb, codigo_fac, precioneto, preciocoste, beneficio) VALUES ('
+        } else {
+            $sql = 'INSERT INTO beneficios (id, codigo_pre, codigo_ped, codigo_alb, codigo_fac, precioneto, preciocoste, beneficio) VALUES ('
             . $this->var2str($this->id)
             . ', ' . $this->var2str($this->codigo_pre)
             . ', ' . $this->var2str($this->codigo_ped)
@@ -130,12 +129,13 @@ class beneficio extends fs_model
             . ', ' . $this->var2str($this->preciocoste)
             . ', ' . $this->var2str($this->beneficio)
             . ');';
-        if ($this->db->exec($sql)) {
-            $this->id = $this->db->lastval();
-            return true;
+            if ($this->db->exec($sql)) {
+                $this->codigo = $this->db->lastval();
+                return true;
+            } else {
+                return false;
+            }
         }
-
-        return false;
     }
 
     /**

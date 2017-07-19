@@ -24,27 +24,11 @@ $(document).ready(function () {
     //alert(userQuery.page);
 
     // Recogemos los codigos de los documentos en el listado y los ponemos en el array docs
+    var dataCodigo= $("[data-codigo]");
     var docs=[];
-    $("[data-codigo]").each(function(){
+    dataCodigo.each(function(){
         docs.push($(this).attr("data-codigo"));
     });
-
-    alert(docs);
-
-    /*var match="";
-    //Si hay versiones de presupuesto solo recogemos el que hemos abierto
-    if ($("#modal_versionesp").length === 1) {
-        match = $("ol li.active");
-    }
-
-    //Si no encuentra nada se trata de un documento y tenemos que buscar en otra parte
-    if (match[0] === null) {
-        match = $("ol li.active");
-        //si sigue sin encontrar nada estamos editando una factura con el plugin editar_faturas
-        if (match[0] === null) {
-            match = $('h2 small');
-        }
-    }*/
 
 
     // Añadimos el div donde irá la información
@@ -87,7 +71,7 @@ $(document).ready(function () {
     //Guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
     $('.btn-primary').click(function () {
 
-        var bcodigo = match.text();
+        var bcodigo =dataCodigo.attr("data-codigo");
 
         if (bcodigo !== '') {
             var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
@@ -265,6 +249,7 @@ function finished(result) {
 
 }
 
+//función que devuelve los parámetros de la URL visitada
 function getQuery() {
     var userQuery = {};
     location.search.substr(1).split('&').forEach(function (item) {
