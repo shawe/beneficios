@@ -6,10 +6,30 @@
 class beneficio extends fs_model
 {
     /**
-     * Código del documento: clave primaria, character varying (20)
+     * Id autoincremental del registro clave primaria
      * @var null
      */
-    public $codigo;
+    public $id;
+    /**
+     * Código del presupuesto
+     * @var string
+     */
+    public $codigo_pre;
+    /**
+     * Código del pedido
+     * @var string
+     */
+    public $codigo_ped;
+    /**
+     * Código del albarán
+     * @var string
+     */
+    public $codigo_alb;
+    /**
+     * Código de la factura
+     * @var string
+     */
+    public $codigo_fac;
     /**
      * Total neto del documento
      * @var float
@@ -35,13 +55,21 @@ class beneficio extends fs_model
     {
         parent::__construct('beneficios');
         if ($d) {
-            $this->codigo = $d['codigo'];
+            $this->id = $d['id'];
+            $this->codigo_pre = $d['codigo_pre'];
+            $this->codigo_ped = $d['codigo_ped'];
+            $this->codigo_alb = $d['codigo_alb'];
+            $this->codigo_fac = $d['codigo_fac'];
             $this->precioneto = (float)$d['precioneto'];
             $this->preciocoste = (float)$d['preciocoste'];
             $this->beneficio = (float)$d['beneficio'];
         } else {
             /// valores predeterminados
-            $this->codigo = null;
+            $this->id = null;
+            $this->codigo_pre = null;
+            $this->codigo_ped = null;
+            $this->codigo_alb = null;
+            $this->codigo_fac = null;
             $this->precioneto = 0;
             $this->preciocoste = 0;
             $this->beneficio = 0;
@@ -65,11 +93,11 @@ class beneficio extends fs_model
      */
     public function exists()
     {
-        if ($this->codigo === null) {
+        if ($this->id === null) {
             return false;
         }
 
-        $sql = 'SELECT * FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';';
+        $sql = 'SELECT * FROM beneficios WHERE id = ' . $this->var2str($this->id) . ';';
         return $this->db->select($sql);
     }
 
@@ -81,21 +109,29 @@ class beneficio extends fs_model
     public function save()
     {
         if ($this->exists()) {
-            $sql = 'UPDATE beneficios SET precioneto = ' . $this->var2str($this->precioneto)
+            $sql = 'UPDATE beneficios SET '
+                . 'codigo_pre = ' . $this->var2str($this->codigo_pre)
+                . ', codigo_ped = ' . $this->var2str($this->codigo_ped)
+                . ', codigo_alb = ' . $this->var2str($this->codigo_alb)
+                . ', codigo_fac = ' . $this->var2str($this->codigo_fac)
                 . ', preciocoste = ' . $this->var2str($this->preciocoste)
                 . ', beneficio = ' . $this->var2str($this->beneficio)
-                . ' WHERE codigo = ' . $this->var2str($this->codigo) . ';';
+                . ' WHERE id = ' . $this->var2str($this->id) . ';';
             return $this->db->exec($sql);
         }
 
-        $sql = 'INSERT INTO beneficios (codigo, precioneto, preciocoste, beneficio) VALUES ('
-            . $this->var2str($this->codigo)
+        $sql = 'INSERT INTO beneficios (id, codigo_pre, codigo_ped, codigo_alb, codigo_fac, precioneto, preciocoste, beneficio) VALUES ('
+            . $this->var2str($this->id)
+            . ', ' . $this->var2str($this->codigo_pre)
+            . ', ' . $this->var2str($this->codigo_ped)
+            . ', ' . $this->var2str($this->codigo_alb)
+            . ', ' . $this->var2str($this->codigo_fac)
             . ', ' . $this->var2str($this->precioneto)
             . ', ' . $this->var2str($this->preciocoste)
             . ', ' . $this->var2str($this->beneficio)
             . ');';
         if ($this->db->exec($sql)) {
-            $this->codigo = $this->db->lastval();
+            $this->id = $this->db->lastval();
             return true;
         }
 
@@ -109,7 +145,7 @@ class beneficio extends fs_model
      */
     public function delete()
     {
-        $sql = 'DELETE FROM beneficios WHERE codigo = ' . $this->var2str($this->codigo) . ';';
+        $sql = 'DELETE FROM beneficios WHERE id = ' . $this->var2str($this->id) . ';';
         return $this->db->exec($sql);
     }
 
@@ -120,7 +156,7 @@ class beneficio extends fs_model
      *
      * @return string
      */
-    public function lastcod($tablax)
+    public function lastCod($tablax)
     {
         sleep(1);
 
@@ -130,28 +166,58 @@ class beneficio extends fs_model
             $tabla = $tablax . 'scli';
         }
 
-        $lastcodigo = '';
+        $lastCodigo = '';
         $sql = 'SELECT codigo, id' . $tablax . ' FROM ' . $tabla . ' ORDER BY id' . $tablax . ' DESC LIMIT 1 ;';
         $data = $this->db->select($sql);
         if ($data) {
             foreach ($data as $d) {
-                $lastcodigo = $d['codigo'];
+                $lastCodigo = $d['codigo'];
             }
         }
-        return $lastcodigo;
+        return $lastCodigo;
     }
 
     /**
+     * Devuelve el campo código a utilizar en función de la página
+     * 
+     * @param type $pagina
+     * @return string
+     */
+    private function getCodigoNombre($pagina) {
+       switch ($pagina) {
+           case 'ventas_presupuestos':
+              $codigo = 'codigo_pre';
+              break;
+           case 'ventas_pedidos':
+              $codigo = 'codigo_pre';
+              break;
+           case 'ventas_albaranes':
+              $codigo = 'codigo_alb';
+              break;
+           case 'ventas_facturas':
+              $codigo = 'codigo_fac';
+              break;
+           default:
+              $codigo = '';
+              break;
+        }
+        return $codigo;
+    }
+    
+    /**
      * Recoge todos los codigos pasados en el array existentes en la bdd beneficios
      *
-     * @param $array_documentos
+     * @param array $array_documentos
+     * @param string $pagina
      *
      * @return array
      */
-    public function getByCodigo($array_documentos)
+    public function getByCodigo($array_documentos, $pagina)
     {
+        $codigo = $this->getCodigoNombre($pagina);
+        
         $lista = [];
-        $sql = "SELECT * FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
+        $sql = "SELECT * FROM beneficios WHERE " . $codigo . " IN ('" . implode("', '", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {
@@ -166,14 +232,17 @@ class beneficio extends fs_model
     /**
      * Recoge todos los netos de los códigos pasados en el array
      *
-     * @param $array_documentos
+     * @param array $array_documentos
+     * @param string $pagina
      *
      * @return float
      */
-    public function getNeto($array_documentos)
+    public function getNeto($array_documentos, $pagina)
     {
+        $codigo = $this->getCodigoNombre($pagina);
+        
         $resultado = 0;
-        $sql = "SELECT precioneto FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
+        $sql = "SELECT precioneto FROM beneficios WHERE " . $codigo. " IN ('" . implode("', '", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {
@@ -187,14 +256,17 @@ class beneficio extends fs_model
     /**
      * Recoge todos los costes de los códigos pasados en el array
      *
-     * @param $array_documentos
+     * @param array $array_documentos
+     * @param string $pagina
      *
      * @return float
      */
-    public function getCoste($array_documentos)
+    public function getCoste($array_documentos, $pagina)
     {
+        $codigo = $this->getCodigoNombre($pagina);
+        
         $resultado = 0;
-        $sql = "SELECT preciocoste FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
+        $sql = "SELECT preciocoste FROM beneficios WHERE ". $codigo ." IN ('" . implode("', '", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {
@@ -208,14 +280,17 @@ class beneficio extends fs_model
     /**
      * Recoge todos los beneficios de los códigos pasados en el array
      *
-     * @param $array_documentos
+     * @param array $array_documentos
+     * @param string $pagina
      *
      * @return float
      */
-    public function getBeneficio($array_documentos)
+    public function getBeneficio($array_documentos, $pagina)
     {
+        $codigo = $this->getCodigoNombre($pagina);
+        
         $resultado = 0;
-        $sql = "SELECT beneficio FROM beneficios WHERE codigo IN ('" . implode("', '", $array_documentos) . "')";
+        $sql = "SELECT beneficio FROM beneficios WHERE " . $codigo . " IN ('" . implode("', '", $array_documentos) . "')";
 
         $data = $this->db->select($sql);
         if ($data) {

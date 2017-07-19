@@ -6,7 +6,28 @@
 -->
 <tabla>
     <columna>
-        <nombre>codigo</nombre>
+        <nombre>id</nombre>
+        <tipo>serial</tipo>
+        <nulo>NO</nulo>
+        <defecto>nextval('beneficios_id_seq'::regclass)</defecto>
+    </columna>
+    <columna>
+        <nombre>codigo_pre</nombre>
+        <tipo>varchar(20)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>codigo_ped</nombre>
+        <tipo>varchar(20)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>codigo_alb</nombre>
+        <tipo>varchar(20)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>codigo_fac</nombre>
         <tipo>varchar(20)</tipo>
         <nulo>NO</nulo>
     </columna>
@@ -30,6 +51,6 @@
     </columna>
     <restriccion>
         <nombre>beneficios_pkey</nombre>
-        <consulta>PRIMARY KEY (codigo)</consulta>
+        <consulta>PRIMARY KEY id</consulta>
     </restriccion>
 </tabla>
