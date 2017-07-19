@@ -53,4 +53,28 @@
         <nombre>beneficios_pkey</nombre>
         <consulta>PRIMARY KEY id</consulta>
     </restriccion>
+    <restriccion>
+        <nombre>ca_codigo_pre</nombre>
+        <consulta>FOREIGN KEY (codigo_pre)
+            REFERENCES presupuestoscli (codigo)
+            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+    </restriccion>
+    <restriccion>
+        <nombre>ca_codigo_ped</nombre>
+        <consulta>FOREIGN KEY (codigo_ped)
+            REFERENCES pedidoscli (codigo)
+            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+    </restriccion>
+    <restriccion>
+        <nombre>ca_codigo_alb</nombre>
+        <consulta>FOREIGN KEY (codigo_alb)
+            REFERENCES albaranescli (codigo)
+            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+    </restriccion>
+    <restriccion>
+        <nombre>ca_codigo_fac</nombre>
+        <consulta>FOREIGN KEY (codigo_fact)
+            REFERENCES facturascli (codigo)
+            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+    </restriccion>
 </tabla>
