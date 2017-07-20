@@ -39,7 +39,10 @@ $(document).ready(function () {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({docs: docs}),
+        data: ({
+           docs: docs,
+           page: userQuery.page
+        }),
         dataType: 'html',
         success: finished
     });
@@ -81,7 +84,10 @@ $(document).ready(function () {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({array_beneficios: array_beneficios}),
+                data: ({
+                   array_beneficios: array_beneficios,
+                   page: userQuery.page
+                }),
                 dataType: 'html'
             });
         }
@@ -101,7 +107,10 @@ $(document).ready(function () {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({array_beneficios: array_beneficios}),
+                data: ({
+                   array_beneficios: array_beneficios,
+                   page: userQuery.page
+               }),
                 dataType: 'html'
             });
         }
@@ -116,7 +125,10 @@ $(document).ready(function () {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({bcodigo: bcodigo}),
+                data: ({
+                   bcodigo: bcodigo,
+                   page: userQuery.page
+                }),
                 dataType: 'html'
             });
         }
@@ -202,7 +214,9 @@ function mutation_observer_callback(mutations) {
 
 //Funcion para enviar los datos de beneficios
 function show_msg() {
-
+    // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
+    var userQuery = getQuery();
+    
     //variable que contiene la refererncia del articulo
     var match = $("div.form-control a");
     // Array con los codigos de todos los articulos
@@ -232,7 +246,12 @@ function show_msg() {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({docs: docs, cantidades: cantidades, neto: neto}),
+        data: ({
+           docs: docs,
+           cantidades: cantidades,
+           neto: neto,
+           page: userQuery.page
+        }),
         dataType: 'html',
         success: finished
     });

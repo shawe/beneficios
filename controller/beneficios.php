@@ -180,7 +180,7 @@ class beneficios extends fs_controller
         $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         
         // TODO: Necesario añadirlo en el JS
-        //$this->pagina = filter_input(INPUT_POST, 'pagina');
+        $this->pagina = filter_input(INPUT_POST, 'page');
         
         switch (true) {
             case isset($_POST['bcodigo']):

@@ -13,22 +13,22 @@
     </columna>
     <columna>
         <nombre>codigo_pre</nombre>
-        <tipo>varchar(20)</tipo>
+        <tipo>character varying(20)</tipo>
         <nulo>NO</nulo>
     </columna>
     <columna>
         <nombre>codigo_ped</nombre>
-        <tipo>varchar(20)</tipo>
+        <tipo>character varying(20)</tipo>
         <nulo>NO</nulo>
     </columna>
     <columna>
         <nombre>codigo_alb</nombre>
-        <tipo>varchar(20)</tipo>
+        <tipo>character varying(20)</tipo>
         <nulo>NO</nulo>
     </columna>
     <columna>
         <nombre>codigo_fac</nombre>
-        <tipo>varchar(20)</tipo>
+        <tipo>character varying(20)</tipo>
         <nulo>NO</nulo>
     </columna>
     <columna>
@@ -51,30 +51,30 @@
     </columna>
     <restriccion>
         <nombre>beneficios_pkey</nombre>
-        <consulta>PRIMARY KEY id</consulta>
+        <consulta>PRIMARY KEY (id)</consulta>
     </restriccion>
     <restriccion>
         <nombre>ca_codigo_pre</nombre>
         <consulta>FOREIGN KEY (codigo_pre)
-            REFERENCES presupuestoscli (codigo)
+            REFERENCES presupuestoscli(codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
         <nombre>ca_codigo_ped</nombre>
         <consulta>FOREIGN KEY (codigo_ped)
-            REFERENCES pedidoscli (codigo)
+            REFERENCES pedidoscli(codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
         <nombre>ca_codigo_alb</nombre>
         <consulta>FOREIGN KEY (codigo_alb)
-            REFERENCES albaranescli (codigo)
+            REFERENCES albaranescli(codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
         <nombre>ca_codigo_fac</nombre>
-        <consulta>FOREIGN KEY (codigo_fact)
-            REFERENCES facturascli (codigo)
+        <consulta>FOREIGN KEY (codigo_fac)
+            REFERENCES facturascli(codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
 </tabla>
