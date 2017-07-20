@@ -186,15 +186,19 @@ class beneficio extends fs_model
     private function getCodigoNombre($pagina) {
        switch ($pagina) {
            case 'ventas_presupuestos':
+           case 'ventas_presupuesto':
               $codigo = 'codigo_pre';
               break;
            case 'ventas_pedidos':
+           case 'ventas_pedido':
               $codigo = 'codigo_pre';
               break;
            case 'ventas_albaranes':
+           case 'ventas_albaran':
               $codigo = 'codigo_alb';
               break;
            case 'ventas_facturas':
+           case 'ventas_factura':
               $codigo = 'codigo_fac';
               break;
            default:
