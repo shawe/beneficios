@@ -130,7 +130,7 @@ class beneficio extends fs_model
             . ', ' . $this->var2str($this->beneficio)
             . ');';
             if ($this->db->exec($sql)) {
-                $this->codigo = $this->db->lastval();
+                $this->id = $this->db->lastval();
                 return true;
             } else {
                 return false;
