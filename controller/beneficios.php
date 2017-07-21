@@ -110,7 +110,7 @@ class beneficios extends fs_controller
      * @var string
      */
     public $test2;
-    
+
     /**
      * Página recibida de la vista
      * @var string
@@ -173,33 +173,89 @@ class beneficios extends fs_controller
         $this->test_mode = FS_DB_HISTORY;
         // Mensajes por defecto
         $this->test = 'No se han recibido datos';
-        $this->test2 = 'No se han recibido cantidades';
+        $this->test2 = 'No se ha recibido pagina';
 
         $this->test = '';
         $this->documentos = filter_input(INPUT_POST, 'docs', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        
-        // TODO: Necesario añadirlo en el JS
         $this->pagina = filter_input(INPUT_POST, 'page');
-        
-        switch (true) {
-            case isset($_POST['bcodigo']):
-                $this->borrarBeneficio();
-                break;
-            case isset($_POST['array_beneficios']):
-                $this->guardarBeneficio();
-                break;
-            case !empty($this->cantidades):
-                // TODO: Asignar nombre a la función más a corde con lo que hace ¿procesarDocumento?
-                $this->crearActualizarDocumento();
-                break;
-            case !empty($this->documentos):
-                // TODO: Asignar nombre a la función más a corde con lo que hace ¿procesarDocumentos?
-                $this->procesarDatos();
-                break;
-            default:
-               $this->outputDebug($this->documentos_bdd);
-               break;
+
+        // Si eliminamos un documento eliminamos en la bdd
+        /*if (isset($_POST['bcodigo'])) {
+            $this->beneficio = new beneficio();
+            $this->beneficio->codigo = filter_input(INPUT_POST, 'bcodigo', FILTER_DEFAULT);
+            $this->beneficio->delete();
+        }*/
+
+        // Si guardamos un documento actualizamos o insertamos en la bdd
+        if (isset($_POST['array_beneficios'])) {
+            $this->datos = filter_input(INPUT_POST, 'array_beneficios', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            $this->guardar($this->pagina);
+        }
+        else {
+            // Si nos pasan cantidades estamos creando o editando un documento
+            if (!empty($this->cantidades)) {
+                $this->neto = filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
+                $this->total_neto = $this->neto;
+                $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
+                $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
+
+                if ($this->test_mode) {
+                    // Testear recepción de datos
+                    if (!empty($this->documentos)) {
+                        $this->test = json_encode($this->documentos);
+                    }
+                    $this->test2 = json_encode($this->pagina);
+                }
+            }
+            else {
+                if (!empty($this->documentos)) {
+                    $totalneto_bdd = 0;
+                    $totalcoste_bdd = 0;
+                    $totalbeneficio_bdd = 0;
+
+                    // Comprovar códigos existentes en la bdd
+                    $ben = new beneficio();
+                    $this->documentos_bdd = $ben->getByCodigo($this->documentos, $this->pagina);
+                    // Recogemos los datos de la bdd y sumamos
+                    foreach ($this->documentos_bdd as $d) {
+                        $totalneto_bdd += $d->precioneto;
+                        $totalcoste_bdd += $d->preciocoste;
+                        $totalbeneficio_bdd += $d->beneficio;
+                        $codigo = $ben->getCodigoNombre($this->pagina);
+                        // Quitamos del array los códigos que ya están en la bdd beneficios
+                        if (($key = array_search($d->$codigo, $this->documentos, false)) !== false) {
+                            unset($this->documentos[$key]);
+                        }
+                    }
+
+                    // Calculamos valores que no están en la bdd sobre el precio de coste actual del artículo
+                    $this->table = $this->table($this->documentos);
+                    $this->total_neto = $this->calcTotalNeto($this->documentos);
+                    $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
+                    $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
+
+                    // Sumamos los valores que están en la bdd y los que no están
+                    $this->total_neto += $totalneto_bdd;
+                    $this->total_coste += $totalcoste_bdd;
+                    $this->total_beneficio += $totalbeneficio_bdd;
+
+                    if ($this->test_mode) {
+                        // Testear recepción de datos
+                        $this->test = json_encode($this->documentos);
+                        $this->test2 = json_encode($this->pagina);
+                    }
+                }
+                else {
+                    if ($this->test_mode) {
+                        // Testear recepción de datos
+                        if (!empty($this->documentos_bdd)) {
+                            $this->test = json_encode($this->documentos_bdd);
+                        }
+                        $this->test2 = json_encode($this->pagina);
+                    }
+                }
+            }
         }
     }
 
@@ -243,27 +299,47 @@ class beneficios extends fs_controller
     /**
      * Almacena beneficios en la bdd
      */
-    private function guardar()
+    private function guardar($pagina)
     {
         $this->beneficio = new beneficio();
 
+
+        $campo=$this->beneficio->getCodigoNombre($pagina);
+
         $code = $this->datos[0];
-        //si tenemos parte de la tabla en vez del código procesamos
+
+        $this->beneficio->id=$this->beneficio->getByCodigo($this->datos, $pagina);
+        //si tenemos parte de la tabla en vez del código estamos guardando un nuevo doc y necesitamos buscar su código con lastcod()
+        //si ya tenemos el código solamente necesitamos saber a qué tabla pertenece
         switch ($code) {
             case 'presupuesto':
-                $this->beneficio->codigo = $this->beneficio->lastcod('presupuesto');
+                $this->beneficio->codigo_pre = $this->beneficio->lastcod('presupuesto');
                 break;
             case 'pedido':
-                $this->beneficio->codigo = $this->beneficio->lastcod('pedido');
+                $this->beneficio->codigo_ped = $this->beneficio->lastcod('pedido');
                 break;
             case 'albaran':
-                $this->beneficio->codigo = $this->beneficio->lastcod('albaran');
+                $this->beneficio->codigo_alb = $this->beneficio->lastcod('albaran');
                 break;
             case 'factura':
-                $this->beneficio->codigo = $this->beneficio->lastcod('factura');
+                $this->beneficio->codigo_fac = $this->beneficio->lastcod('factura');
                 break;
             default:
-                $this->beneficio->codigo = $code;
+                switch($campo){
+                    case 'codigo_pre':
+                        $this->beneficio->codigo_pre = $code;
+                        break;
+                    case 'codigo_ped':
+                        $this->beneficio->codigo_ped = $code;
+                        break;
+                    case 'codigo_alb':
+                        $this->beneficio->codigo_alb = $code;
+                        break;
+                    case 'factura':
+                        $this->beneficio->codigo_fac = $code;
+                        break;
+                }
+            //$this->beneficio->codigo = $code;
         }
 
         $this->beneficio->precioneto = $this->datos[1];
@@ -335,92 +411,7 @@ class beneficios extends fs_controller
 
         return (float)$totalcoste;
     }
-    
-    /**
-     * TODO
-     */
-    private function borrarBeneficio() {
-        // Si eliminamos un documento eliminamos en la bdd
-        $this->beneficio = new beneficio();
-        $this->beneficio->codigo = filter_input(INPUT_POST, 'bcodigo', FILTER_DEFAULT);
-        $this->beneficio->delete();
-    }
-    
-    /**
-     * TODO
-     */
-    private function guardarBeneficio() {
-        // Si guardamos un documento actualizamos o insertamos en la bdd
-        $this->datos = filter_input(INPUT_POST, 'array_beneficios', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        $this->guardar();
-    }
-    
-    /**
-     * TODO
-     */
-    private function crearActualizarDocumento() {
-       // Si nos pasan cantidades estamos creando o editando un documento
-        $this->neto = filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
-        $this->total_neto = $this->neto;
-        $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
-        $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
 
-        $this->outputDebug($this->documentos, $this->cantidades);
-    }
-    
-    /**
-     * TODO
-     */
-    private function procesarDatos() {
-        $totalneto_bdd = 0;
-        $totalcoste_bdd = 0;
-        $totalbeneficio_bdd = 0;
-        // Comprovar códigos existentes en la bdd
-        $ben = new beneficio();
-        $this->documentos_bdd = $ben->getByCodigo($this->documentos, $this->pagina);
-        // Recogemos los datos de la bdd y sumamos
-        foreach ($this->documentos_bdd as $d) {
-            $totalneto_bdd += $d->precioneto;
-            $totalcoste_bdd += $d->preciocoste;
-            $totalbeneficio_bdd += $d->beneficio;
-            // Quitamos del array los códigos que ya están en la bdd beneficios
-            if (($key = array_search($d->codigo, $this->documentos, false)) !== false) {
-                unset($this->documentos[$key]);
-            }
-        }
-
-        // Calculamos valores que no están en la bdd sobre el precio de coste actual del artículo
-        $this->table = $this->table($this->documentos);
-        $this->total_neto = $this->calcTotalNeto($this->documentos);
-        $this->total_coste = $this->calcTotalCoste($this->documentos, $this->cantidades);
-        $this->total_beneficio = $this->calcBeneficio($this->total_neto, $this->total_coste);
-        
-        // Sumamos los valores que están en la bdd y los que no están
-        $this->total_neto += $totalneto_bdd;
-        $this->total_coste += $totalcoste_bdd;
-        $this->total_beneficio += $totalbeneficio_bdd;
-        
-        $this->outputDebug($this->documentos);
-    }
-    
-    /**
-     * Genera mensaje para mostrarlo en la vista si está el modo debug activado
-     * 
-     * @param type $test
-     * @param type $test2
-     */
-    function outputDebug($test = [], $test2 = []) {
-        if ($this->test_mode) {
-            // Testear recepción de datos
-            if (!empty($test)) {
-                $this->test = json_encode($test);
-            }
-            if (!empty($test2)) {
-                $this->test2 = json_encode($test2);
-            }
-        }
-    }
-    
     /**
      * Extensión para integrarse en otras páginas (heredado de fs_controller)
      */
