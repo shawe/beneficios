@@ -21,8 +21,8 @@ $(document).ready(function () {
     // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
     var userQuery = getQuery();
     var page = userQuery.page;
-    //alert(userQuery.id);
-    //alert(userQuery.page);
+    //console.log(userQuery.id);
+    //console.log(userQuery.page);
 
     // Recogemos los codigos de los documentos en el listado y los ponemos en el array docs
     var dataCodigo= $("[data-codigo]");
@@ -70,9 +70,8 @@ $(document).ready(function () {
     //***************************************************************************
 
     //Guardar datos en la bdd cuando pulsamos el botón Guardar de un documento ya creado
-    $('.btn-primary').click(function () {
-
-        var bcodigo =dataCodigo.attr("data-codigo");
+    $($('button.btn-primary')[1]).click(function () {
+        var bcodigo = dataCodigo.attr("data-codigo");
 
         if (bcodigo) {
             var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
@@ -112,7 +111,7 @@ $(document).ready(function () {
     //Eliminar datos cuando se elimina un documento
     /*$('.modal-footer .btn-danger').click(function () {
      var bcodigo = match.text();
-     // alert(bcodigo);
+     // console.log(bcodigo);
      if (bcodigo !== '') {
      $.ajax({
      url: 'index.php?page=beneficios',

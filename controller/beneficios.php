@@ -191,8 +191,7 @@ class beneficios extends fs_controller
         if (isset($_POST['array_beneficios'])) {
             $this->datos = filter_input(INPUT_POST, 'array_beneficios', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
             $this->guardar($this->pagina);
-        }
-        else {
+        } else {
             // Si nos pasan cantidades estamos creando o editando un documento
             if (!empty($this->cantidades)) {
                 $this->neto = filter_input(INPUT_POST, 'neto', FILTER_DEFAULT);
@@ -207,8 +206,7 @@ class beneficios extends fs_controller
                     }
                     $this->test2 = json_encode($this->pagina);
                 }
-            }
-            else {
+            } else {
                 if (!empty($this->documentos)) {
                     $totalneto_bdd = 0;
                     $totalcoste_bdd = 0;
@@ -245,8 +243,7 @@ class beneficios extends fs_controller
                         $this->test = json_encode($this->documentos);
                         $this->test2 = json_encode($this->pagina);
                     }
-                }
-                else {
+                } else {
                     if ($this->test_mode) {
                         // Testear recepción de datos
                         if (!empty($this->documentos_bdd)) {
@@ -302,13 +299,11 @@ class beneficios extends fs_controller
     private function guardar($pagina)
     {
         $this->beneficio = new beneficio();
-
-
-        $campo=$this->beneficio->getCodigoNombre($pagina);
-
+        $campo = $this->beneficio->getCodigoNombre($pagina);
         $code = $this->datos[0];
-
-        $this->beneficio->id=$this->beneficio->getByCodigo($this->datos, $pagina);
+        $array = $this->beneficio->getByCodigo($this->datos, $pagina);
+        $this->beneficio = $array[0];
+        
         //si tenemos parte de la tabla en vez del código estamos guardando un nuevo doc y necesitamos buscar su código con lastcod()
         //si ya tenemos el código solamente necesitamos saber a qué tabla pertenece
         switch ($code) {
@@ -325,7 +320,7 @@ class beneficios extends fs_controller
                 $this->beneficio->codigo_fac = $this->beneficio->lastcod('factura');
                 break;
             default:
-                switch($campo){
+                switch($campo) {
                     case 'codigo_pre':
                         $this->beneficio->codigo_pre = $code;
                         break;
@@ -339,9 +334,8 @@ class beneficios extends fs_controller
                         $this->beneficio->codigo_fac = $code;
                         break;
                 }
-            //$this->beneficio->codigo = $code;
         }
-
+        
         $this->beneficio->precioneto = $this->datos[1];
         $this->beneficio->preciocoste = $this->datos[2];
         $this->beneficio->beneficio = $this->datos[3];

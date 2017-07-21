@@ -8,7 +8,7 @@
     <columna>
         <nombre>id</nombre>
         <tipo>serial</tipo>
-        <nulo>YES</nulo>
+        <nulo>NO</nulo>
         <defecto>nextval('beneficios_id_seq'::regclass)</defecto>
     </columna>
     <columna>
@@ -60,11 +60,19 @@
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
+      <nombre>uniq_codigo_pre</nombre>
+      <consulta>UNIQUE (codigo_pre)</consulta>
+   </restriccion>
+    <restriccion>
         <nombre>ca_codigo_ped</nombre>
         <consulta>FOREIGN KEY (codigo_ped)
             REFERENCES pedidoscli (codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
+    <restriccion>
+      <nombre>uniq_codigo_ped</nombre>
+      <consulta>UNIQUE (codigo_ped)</consulta>
+   </restriccion>
     <restriccion>
         <nombre>ca_codigo_alb</nombre>
         <consulta>FOREIGN KEY (codigo_alb)
@@ -72,9 +80,17 @@
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
+      <nombre>uniq_codigo_alb</nombre>
+      <consulta>UNIQUE (codigo_alb)</consulta>
+   </restriccion>
+    <restriccion>
         <nombre>ca_codigo_fac</nombre>
         <consulta>FOREIGN KEY (codigo_fac)
             REFERENCES facturascli (codigo)
             ON DELETE SET NULL ON UPDATE CASCADE</consulta>
     </restriccion>
+    <restriccion>
+      <nombre>uniq_codigo_fac</nombre>
+      <consulta>UNIQUE (codigo_fac)</consulta>
+   </restriccion>
 </tabla>
