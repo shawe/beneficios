@@ -20,6 +20,7 @@
 $(document).ready(function () {
     // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
     var userQuery = getQuery();
+    var page = userQuery.page;
     //alert(userQuery.id);
     //alert(userQuery.page);
 
@@ -39,10 +40,7 @@ $(document).ready(function () {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({
-           docs: docs,
-           page: userQuery.page
-        }),
+        data: ({docs: docs, page:page}),
         dataType: 'html',
         success: finished
     });
@@ -76,7 +74,7 @@ $(document).ready(function () {
 
         var bcodigo =dataCodigo.attr("data-codigo");
 
-        if (bcodigo !== '') {
+        if (bcodigo) {
             var bneto = parseFloat($('#b_neto').text().replace(',', '.'));
             var bcoste = parseFloat($('#b_coste').text().replace(',', '.'));
             var bbeneficio = parseFloat($('#b_beneficio').text().replace(',', '.'));
@@ -84,10 +82,7 @@ $(document).ready(function () {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({
-                   array_beneficios: array_beneficios,
-                   page: userQuery.page
-                }),
+                data: ({array_beneficios: array_beneficios, page:page}),
                 dataType: 'html'
             });
         }
@@ -107,10 +102,7 @@ $(document).ready(function () {
             $.ajax({
                 url: 'index.php?page=beneficios',
                 type: "post",
-                data: ({
-                   array_beneficios: array_beneficios,
-                   page: userQuery.page
-               }),
+                data: ({array_beneficios: array_beneficios}),
                 dataType: 'html'
             });
         }
@@ -118,21 +110,18 @@ $(document).ready(function () {
 
 
     //Eliminar datos cuando se elimina un documento
-    $('.modal-footer .btn-danger').click(function () {
-        var bcodigo = match.text();
-        // alert(bcodigo);
-        if (bcodigo !== '') {
-            $.ajax({
-                url: 'index.php?page=beneficios',
-                type: "post",
-                data: ({
-                   bcodigo: bcodigo,
-                   page: userQuery.page
-                }),
-                dataType: 'html'
-            });
-        }
-    });
+    /*$('.modal-footer .btn-danger').click(function () {
+     var bcodigo = match.text();
+     // alert(bcodigo);
+     if (bcodigo !== '') {
+     $.ajax({
+     url: 'index.php?page=beneficios',
+     type: "post",
+     data: ({bcodigo: bcodigo}),
+     dataType: 'html'
+     });
+     }
+     });*/
 
 });
 
@@ -214,9 +203,7 @@ function mutation_observer_callback(mutations) {
 
 //Funcion para enviar los datos de beneficios
 function show_msg() {
-    // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
-    var userQuery = getQuery();
-    
+
     //variable que contiene la refererncia del articulo
     var match = $("div.form-control a");
     // Array con los codigos de todos los articulos
@@ -246,12 +233,7 @@ function show_msg() {
     $.ajax({
         url: 'index.php?page=beneficios',
         type: "post",
-        data: ({
-           docs: docs,
-           cantidades: cantidades,
-           neto: neto,
-           page: userQuery.page
-        }),
+        data: ({docs: docs, cantidades: cantidades, neto: neto}),
         dataType: 'html',
         success: finished
     });
