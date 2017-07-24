@@ -57,7 +57,7 @@
         <nombre>ca_codigo_pre</nombre>
         <consulta>FOREIGN KEY (codigo_pre)
             REFERENCES presupuestoscli (codigo)
-            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+            ON DELETE CASCADE ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
       <nombre>uniq_codigo_pre</nombre>
@@ -67,7 +67,7 @@
         <nombre>ca_codigo_ped</nombre>
         <consulta>FOREIGN KEY (codigo_ped)
             REFERENCES pedidoscli (codigo)
-            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+            ON DELETE CASCADE ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
       <nombre>uniq_codigo_ped</nombre>
@@ -77,7 +77,7 @@
         <nombre>ca_codigo_alb</nombre>
         <consulta>FOREIGN KEY (codigo_alb)
             REFERENCES albaranescli (codigo)
-            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+            ON DELETE CASCADE ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
       <nombre>uniq_codigo_alb</nombre>
@@ -87,7 +87,7 @@
         <nombre>ca_codigo_fac</nombre>
         <consulta>FOREIGN KEY (codigo_fac)
             REFERENCES facturascli (codigo)
-            ON DELETE SET NULL ON UPDATE CASCADE</consulta>
+            ON DELETE CASCADE ON UPDATE CASCADE</consulta>
     </restriccion>
     <restriccion>
       <nombre>uniq_codigo_fac</nombre>

@@ -207,6 +207,9 @@ class beneficio extends fs_model
             case 'ventas_factura':
                 $codigo = 'codigo_fac';
                 break;
+            case 'editar_factura':
+                $codigo = 'codigo_fac';
+                break;
             default:
                 $codigo = '';
                 break;

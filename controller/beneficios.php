@@ -180,12 +180,6 @@ class beneficios extends fs_controller
         $this->cantidades = filter_input(INPUT_POST, 'cantidades', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $this->pagina = filter_input(INPUT_POST, 'page');
 
-        // Si eliminamos un documento eliminamos en la bdd
-        /*if (isset($_POST['bcodigo'])) {
-            $this->beneficio = new beneficio();
-            $this->beneficio->codigo = filter_input(INPUT_POST, 'bcodigo', FILTER_DEFAULT);
-            $this->beneficio->delete();
-        }*/
 
         // Si guardamos un documento actualizamos o insertamos en la bdd
         if (isset($_POST['array_beneficios'])) {
@@ -302,40 +296,49 @@ class beneficios extends fs_controller
         $campo = $this->beneficio->getCodigoNombre($pagina);
         $code = $this->datos[0];
         $array = $this->beneficio->getByCodigo($this->datos, $pagina);
-        $this->beneficio = $array[0];
-        
-        //si tenemos parte de la tabla en vez del código estamos guardando un nuevo doc y necesitamos buscar su código con lastcod()
-        //si ya tenemos el código solamente necesitamos saber a qué tabla pertenece
-        switch ($code) {
-            case 'presupuesto':
-                $this->beneficio->codigo_pre = $this->beneficio->lastcod('presupuesto');
-                break;
-            case 'pedido':
-                $this->beneficio->codigo_ped = $this->beneficio->lastcod('pedido');
-                break;
-            case 'albaran':
-                $this->beneficio->codigo_alb = $this->beneficio->lastcod('albaran');
-                break;
-            case 'factura':
-                $this->beneficio->codigo_fac = $this->beneficio->lastcod('factura');
-                break;
-            default:
-                switch($campo) {
-                    case 'codigo_pre':
-                        $this->beneficio->codigo_pre = $code;
-                        break;
-                    case 'codigo_ped':
-                        $this->beneficio->codigo_ped = $code;
-                        break;
-                    case 'codigo_alb':
-                        $this->beneficio->codigo_alb = $code;
-                        break;
-                    case 'factura':
-                        $this->beneficio->codigo_fac = $code;
-                        break;
-                }
+
+        //Si ya existe en la bdd, cargamos sus datos
+        if(!empty($array)){
+            $this->beneficio = $array[0];
         }
+        else{
+            //no existe en la bdd, necesitamos insertar
+            //si tenemos parte de la tabla en vez del código estamos guardando un nuevo doc y necesitamos buscar su código con lastcod()
+            //si ya tenemos el código solamente necesitamos saber a qué tabla pertenece
+            switch ($code) {
+                case 'presupuesto':
+                    $this->beneficio->codigo_pre = $this->beneficio->lastcod('presupuesto');
+                    break;
+                case 'pedido':
+                    $this->beneficio->codigo_ped = $this->beneficio->lastcod('pedido');
+                    break;
+                case 'albaran':
+                    $this->beneficio->codigo_alb = $this->beneficio->lastcod('albaran');
+                    break;
+                case 'factura':
+                    $this->beneficio->codigo_fac = $this->beneficio->lastcod('factura');
+                    break;
+                default:
+                    switch($campo) {
+                        case 'codigo_pre':
+                            $this->beneficio->codigo_pre = $code;
+                            break;
+                        case 'codigo_ped':
+                            $this->beneficio->codigo_ped = $code;
+                            break;
+                        case 'codigo_alb':
+                            $this->beneficio->codigo_alb = $code;
+                            break;
+                        case 'codigo_fac':
+                            $this->beneficio->codigo_fac = $code;
+                            break;
+                    }
+            }
+        }
+
         
+
+
         $this->beneficio->precioneto = $this->datos[1];
         $this->beneficio->preciocoste = $this->datos[2];
         $this->beneficio->beneficio = $this->datos[3];

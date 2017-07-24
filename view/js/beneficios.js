@@ -108,20 +108,6 @@ $(document).ready(function () {
     });
 
 
-    //Eliminar datos cuando se elimina un documento
-    /*$('.modal-footer .btn-danger').click(function () {
-     var bcodigo = match.text();
-     // console.log(bcodigo);
-     if (bcodigo !== '') {
-     $.ajax({
-     url: 'index.php?page=beneficios',
-     type: "post",
-     data: ({bcodigo: bcodigo}),
-     dataType: 'html'
-     });
-     }
-     });*/
-
 });
 
 
