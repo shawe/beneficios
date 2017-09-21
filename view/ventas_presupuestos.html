@@ -312,76 +312,72 @@
             <th class="text-right hidden-sm">Validez</th>
          </tr>
       </thead>
-      <tbody>
-         {loop="$fsc->resultados"}
-         <tr class='clickableRow{if="$value->status==1"} success{elseif="$value->status==2"} danger{elseif="$value->total<=0"} warning{/if}' href="{$value->url()}" data-codigo="{$value->codigo}">
-            <td class="text-center">
-               {if="$value->idpedido"}
-               <span class="glyphicon glyphicon-paperclip" title="El {#FS_PRESUPUESTO#} tiene vinculado un {#FS_PEDIDO#}"></span>
+      {loop="$fsc->resultados"}
+      <tr class='clickableRow{if="$value->status==1"} success{elseif="$value->status==2"} danger{elseif="$value->total<=0"} warning{/if}' href="{$value->url()}" data-codigo="{$value->codigo}">
+         <td class="text-center">
+            {if="$value->idpedido"}
+            <span class="glyphicon glyphicon-paperclip" title="El {#FS_PRESUPUESTO#} tiene vinculado un {#FS_PEDIDO#}"></span>
+            {/if}
+            {if="$value->status==2"}
+            <span class="glyphicon glyphicon-remove" title="El {#FS_PRESUPUESTO#} ha sido rechazado"></span>
+            {/if}
+            {if="$value->femail"}
+            <span class="glyphicon glyphicon-send" title="El {#FS_PRESUPUESTO#} fue enviado por email el {$value->femail}"></span>
+            {/if}
+         </td>
+         <td>
+            <a href="{$value->url()}">{$value->codigo}</a> {$value->numero2}
+            {if="$value->totaliva==0"}<span class="label label-warning">Sin {#FS_IVA#}</span>{/if}
+            {if="$value->totalrecargo!=0"}<span class="label label-default">RE</span>{/if}
+            {if="$value->totalirpf!=0"}<span class="label label-default">{#FS_IRPF#}</span>{/if}
+            {if="$value->idoriginal"}<i class="fa fa-retweet" aria-hidden="true" title="Este {#FS_PRESUPUESTO#} es una versión de otro"></i>{/if}
+         </td>
+         <td>
+            {$value->nombrecliente}
+            {if="$value->codcliente"}
+            <a href="{$fsc->url()}&codcliente={$value->codcliente}" class="cancel_clickable" title="Ver más {#FS_PRESUPUESTOS#} de {$value->nombrecliente}">[+]</a>
+            {else}
+            <span class="label label-danger" title="Cliente desconocido">???</span>
+            {/if}
+         </td>
+         <td class="text-right hidden-sm">
+            <span title="{$value->numdocs} documentos adjuntos">
+               {if="$value->numdocs==1"}
+               <i class="fa fa-file" aria-hidden="true"></i>
+               {elseif="$value->numdocs>1"}
+               {$value->numdocs} <i class="fa fa-file" aria-hidden="true"></i>
                {/if}
-               {if="$value->status==2"}
-               <span class="glyphicon glyphicon-remove" title="El {#FS_PRESUPUESTO#} ha sido rechazado"></span>
-               {/if}
-               {if="$value->femail"}
-               <span class="glyphicon glyphicon-send" title="El {#FS_PRESUPUESTO#} fue enviado por email el {$value->femail}"></span>
-               {/if}
-            </td>
-            <td>
-               <a href="{$value->url()}">{$value->codigo}</a> {$value->numero2}
-               {if="$value->totaliva==0"}<span class="label label-warning">Sin {#FS_IVA#}</span>{/if}
-               {if="$value->totalrecargo!=0"}<span class="label label-default">RE</span>{/if}
-               {if="$value->totalirpf!=0"}<span class="label label-default">{#FS_IRPF#}</span>{/if}
-               {if="$value->idoriginal"}<i class="fa fa-retweet" aria-hidden="true" title="Este {#FS_PRESUPUESTO#} es una versión de otro"></i>{/if}
-            </td>
-            <td>
-               {$value->nombrecliente}
-               {if="$value->codcliente"}
-               <a href="{$fsc->url()}&codcliente={$value->codcliente}" class="cancel_clickable" title="Ver más {#FS_PRESUPUESTOS#} de {$value->nombrecliente}">[+]</a>
-               {else}
-               <span class="label label-danger" title="Cliente desconocido">???</span>
-               {/if}
-            </td>
-            <td class="text-right hidden-sm">
-               <span title="{$value->numdocs} documentos adjuntos">
-                  {if="$value->numdocs==1"}
-                  <i class="fa fa-file" aria-hidden="true"></i>
-                  {elseif="$value->numdocs>1"}
-                  {$value->numdocs} <i class="fa fa-file" aria-hidden="true"></i>
-                  {/if}
-               </span>
-            </td>
-            <td>{$value->observaciones_resume()}</td>
-            <td class="text-right" title="{$fsc->show_precio($fsc->euro_convert($value->totaleuros, $value->coddivisa, $value->tasaconv))}">
-               {$fsc->show_precio($value->total, $value->coddivisa)}
-            </td>
-            <td class="text-right" title="Hora {$value->hora}">
-               {if="$value->fecha==$fsc->today()"}<b>{$value->fecha}</b>{else}{$value->fecha}{/if}
-            </td>
-            <td class="text-right hidden-sm">
-               {if="$value->status!=0 OR !$value->finoferta"}-{else}{$value->finoferta}{/if}
-            </td>
-         </tr>
-         {else}
-         <tr class="warning">
-            <td></td>
-            <td colspan="7">Ningún {#FS_PRESUPUESTO#} encontrado. Pulsa el botón <b>Nuevo</b> para crear uno.</td>
-         </tr>
-         {/loop}
-      </tbody>
-      <tfoot>
-         {if="$fsc->total_resultados"}
-         <tr>
-            <th class="hidden-sm"></th>
-            <td colspan="5" class="text-right">
-               {$fsc->total_resultados_txt}
-               {loop="$fsc->total_resultados"}
-               <br/><b>{$fsc->show_precio($value['total'],$value['coddivisa'],FALSE)}</b>
-               {/loop}
-            </td>
-            <td colspan="2"></td>
-         </tr>
-         {/if}
-      </tfoot>
+            </span>
+         </td>
+         <td>{$value->observaciones_resume()}</td>
+         <td class="text-right" title="{$fsc->show_precio($fsc->euro_convert($value->totaleuros, $value->coddivisa, $value->tasaconv))}">
+            {$fsc->show_precio($value->total, $value->coddivisa)}
+         </td>
+         <td class="text-right" title="Hora {$value->hora}">
+            {if="$value->fecha==$fsc->today()"}<b>{$value->fecha}</b>{else}{$value->fecha}{/if}
+         </td>
+         <td class="text-right hidden-sm">
+            {if="$value->status!=0 OR !$value->finoferta"}-{else}{$value->finoferta}{/if}
+         </td>
+      </tr>
+      {else}
+      <tr class="warning">
+         <td></td>
+         <td colspan="7">Ningún {#FS_PRESUPUESTO#} encontrado. Pulsa el botón <b>Nuevo</b> para crear uno.</td>
+      </tr>
+      {/loop}
+      {if="$fsc->total_resultados"}
+      <tr>
+         <th class="hidden-sm"></th>
+         <td colspan="5" class="text-right">
+            {$fsc->total_resultados_txt}
+            {loop="$fsc->total_resultados"}
+            <br/><b>{$fsc->show_precio($value['total'],$value['coddivisa'],FALSE)}</b>
+            {/loop}
+         </td>
+         <td colspan="2"></td>
+      </tr>
+      {/if}
    </table>
 </div>
 
