@@ -1,5 +1,5 @@
 /*
- * This file is part of FacturaScripts
+ * This file is part of Beneficios
  * Copyright (C) 2017  Albert Dilme  
  * Copyright (C) 2017  Francesc Pineda Segarra  shawe.ewahs@gmail.com
  *
@@ -17,7 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//array que controla los observers
+var observers = [];
+
 $(document).ready(function () {
+    //var cantidad = $("#cantidad_" + i).val().replace(",", ".");
+
     // Recogemos los parámetros de la URL que está visitando el usuario, ya que contiene page
     var userQuery = getQuery();
     var page = userQuery.page;
@@ -26,12 +31,13 @@ $(document).ready(function () {
 
     // Recogemos los codigos de los documentos en el listado y los ponemos en el array docs
     var dataCodigo= $("[data-codigo]");
+    console.log(dataCodigo);
     var docs=[];
     dataCodigo.each(function(){
         docs.push($(this).attr("data-codigo"));
     });
-
-
+    //console.log(docs);
+    //console.log(dataCodigo);
     // Añadimos el div donde irá la información
     var html = '<div id="beneficios" class="table-responsive"></div>';
     $(".table-responsive").append(html);
@@ -46,10 +52,10 @@ $(document).ready(function () {
     });
 
     //************************************************************************
-    //Controlamos las mutaciones
+    //Controlamos las mutaciones (var global)
     counter = 0;
     //Donde hay que observar las mutaciones
-    var target = $("#lineas_documento").get(0);
+    var target = $("#lineas_doc" ).get(0);
 
     if (target != null) {
         // crear instancia observer
@@ -61,11 +67,10 @@ $(document).ready(function () {
         observer.observe(target, {
             attributes: true,
             childList: true,
-            characterData: true,
+            characterData: false,
             subtree: true
         });
     }
-
 
     //***************************************************************************
 
@@ -118,69 +123,122 @@ function mutation_observer_callback(mutations) {
     var mutationRecord = mutations[0];
     // acciones a realizar por cada mutación
     if (mutationRecord.addedNodes[0] !== undefined) {
-        //agregar onchange
-        var cantidad = document.getElementById('cantidad_' + counter);
-        cantidad.addEventListener(
-            'change',
-            function () {
-                show_msg();
-            },
-            true
-        );
-        var pvp = document.getElementById('pvp_' + counter);
-        pvp.addEventListener(
-            'change',
-            function () {
-                show_msg();
-            },
-            true
-        );
-        var dto = document.getElementById('dto_' + counter);
-        dto.addEventListener(
-            'change',
-            function () {
-                show_msg();
-            },
-            true
-        );
+        console.log(observers);
+
+        if(!(observers.indexOf('cantidad_' + counter)+1)) {
+            //agregar onchange
+            var cantidad = document.getElementById('cantidad_' + counter);
+            // Control adicional por si el elemento fuera null
+            if (cantidad != null) {
+                //console.log('cantidad_' + counter + " NO está en array")
+                observers.push('cantidad_' + counter);
+                //console.log("Contador MutationObserver (IF): " + counter);
+                cantidad.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+            }
+        }
+
+
+        if(!(observers.indexOf('pvp_' + counter)+1)) {
+            //agregar onchange
+            var pvp = document.getElementById('pvp_' + counter);
+            // Control adicional por si el elemento fuera null
+            if (pvp != null) {
+                //console.log('pvp_' + counter + " NO está en array")
+                observers.push('pvp_' + counter);
+                pvp.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+            }
+        }
+
+
+        if(!(observers.indexOf('dto_' + counter)+1)) {
+            //agregar onchange
+            var dto = document.getElementById('dto_' + counter);
+            // Control adicional por si el elemento fuera null
+            if (dto != null) {
+                //console.log('dto_' + counter + " NO está en array")
+                observers.push('dto_' + counter);
+                dto.addEventListener(
+                    'change',
+                    function () {
+                        show_msg();
+                    },
+                    true
+                );
+            }
+        }
+
+
         //lanzar el mensaje e incrementar el contador
         show_msg();
         counter++;
     } else if (mutationRecord.removedNodes[0] !== undefined) {
         show_msg();
     } else {
-        //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
-        var rowCount = $('#lineas_documento tr').length;
+        if (counter == 0) {
+            //si no se han añadido ni borrado líneas estamos en un documento ya creado y hay que contar las lineas y añadir eventos
+            var rowCount = $('#lineas_doc tr').length;
 
-        for (var i = 0; i < rowCount; i++) {
-            var lineacant = document.getElementById('cantidad_' + i);
-            if (lineacant !== null) {
-                lineacant.addEventListener(
-                    'change',
-                    function () {
-                        show_msg();
-                    },
-                    true
-                );
+            for (var i = 0; i < rowCount; i++) {
+                var lineacant = document.getElementById('cantidad_' + i);
+                // Control adicional por si el elemento fuera null
+                if (lineacant !== null) {
+                    //console.log("Contador MutationObserver (ELSE): " + counter);
+                    if(!(observers.indexOf('cantidad_' + i)+1)) {
+                        //agregar onchange
+                        lineacant.addEventListener(
+                            'change',
+                            function () {
+                                show_msg();
+                            },
+                            true
+                        );
+                    }
+                }
+
                 var lineapvp = document.getElementById('pvp_' + i);
-                lineapvp.addEventListener(
-                    'change',
-                    function () {
-                        show_msg();
-                    },
-                    true
-                );
+                // Control adicional por si el elemento fuera null
+                if (lineapvp !== null) {
+                    if(!(observers.indexOf('pvp_' + i)+1)) {
+                        //agregar onchange
+                        lineapvp.addEventListener(
+                            'change',
+                            function () {
+                                show_msg();
+                            },
+                            true
+                        );
+                    }
+                }
+
                 var lineadto = document.getElementById('dto_' + i);
-                lineadto.addEventListener(
-                    'change',
-                    function () {
-                        show_msg();
-                    },
-                    true
-                );
+                // Control adicional por si el elemento fuera null
+                if (lineadto !== null) {
+                    if(!(observers.indexOf('dto_' + i)+1)) {
+                        //agregar onchange
+                        lineadto.addEventListener(
+                            'change',
+                            function () {
+                                show_msg();
+                            },
+                            true
+                        );
+                    }
+                }
+
                 counter++;
             }
-
         }
     }
 
@@ -190,20 +248,26 @@ function mutation_observer_callback(mutations) {
 function show_msg() {
 
     //variable que contiene la refererncia del articulo
-    var match = $("div.form-control a");
+    var match = $("[data-ref]");
+    //console.log(match.text);
     // Array con los codigos de todos los articulos
     var docs = [];
     $(match).each(function () {
-        docs.push($(this).text());
+        docs.push($(this).attr("data-ref"));
     });
 
     //variable que contiene el neto
     var neto = parseFloat($('#aneto').text());
     //variable que contiene las cantidades del articulo
     var cantidad = document.querySelectorAll('input[id^="cantidad_"]');
+    //console.log($('input[id^="cantidad_"]'));
     //array con todas las cantidades
     var cantidades = [];
     for (var index = 0; index < cantidad.length; index++) {
+        //cantidad[index].value.replace('.', ',');
+        //console.log(cantidad[index]);
+        //cantidad[index].value=cantidad[index].value;
+        //cantidad[index].setAttribute('type', 'text');
         cantidades.push(cantidad[index].value);
     }
 
