@@ -37,7 +37,7 @@ $(document).ready(function () {
     //console.log(dataCodigo);
     // Añadimos el div donde irá la información
     var html = '<div id="beneficios" class="table-responsive"></div>';
-    $("#lineas_a").append(html);
+    $("#lineas, #lineas_a").append(html);
     
     // Consulta AJAX para generar la tabla de beneficios
     $.ajax({
@@ -125,7 +125,6 @@ function mutation_observer_callback(mutations) {
 
 //Funcion para enviar los datos de beneficios
 function show_msg() {
-    console.log("INICIO show_msg");
     //variable que contiene la refererncia del articulo
     var match = $("[data-ref]");
     //console.log(match.text);
@@ -155,7 +154,7 @@ function show_msg() {
 
     // Añadimos el div donde irá la información
     var html = '<div id="beneficios" class="table-responsive"></div>';
-    $("#lineas_a").append(html);
+    $("#lineas, #lineas_a").append(html);
 
     // Consulta AJAX para generar la tabla de beneficios
     $.ajax({
@@ -165,10 +164,6 @@ function show_msg() {
         dataType: 'html',
         success: finished
     });
-    match = undefined;
-    docs = undefined;
-    cantidad = undefined;
-    console.log("FIN show_msg");
 }
 
 //función para insertar el resultado
