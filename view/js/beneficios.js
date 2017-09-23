@@ -1,5 +1,5 @@
-/*
- * This file is part of Beneficios
+/**
+ * This file is part of Beneficios for FacturaScripts
  * Copyright (C) 2017  Albert Dilme  
  * Copyright (C) 2017  Francesc Pineda Segarra  shawe.ewahs@gmail.com
  *
